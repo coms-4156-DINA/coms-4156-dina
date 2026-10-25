@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DegreeAuditService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">dina</a> &gt; <a href="index.source.html" class="el_package">com.dina.service</a> &gt; <span class="el_source">DegreeAuditService.java</span></div><h1>DegreeAuditService.java</h1><pre class="source lang-java linenums">package com.dina.service;
+
+import com.dina.model.CompletedCourse;
+import com.dina.model.Course;
+import com.dina.model.DegreeAuditRequest;
+import com.dina.model.DegreeAuditResult;
+import com.dina.model.DegreeProgram;
+import com.dina.repository.CourseRepository;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import org.springframework.stereotype.Service;
+
+/**
+ * Service calculating degree progress against curriculum rules.
+*/
+@Service
+public final class DegreeAuditService {
+
+    /** Repository for accessing course and degree program data. */
+    private final CourseRepository courseRepository;
+
+    /**
+     * Constructs DegreeAuditService with repository.
+     *
+     * @param courseRepository course data repository
+     */
+<span class="fc" id="L30">    public DegreeAuditService(final CourseRepository courseRepository) {</span>
+<span class="fc" id="L31">        this.courseRepository = courseRepository;</span>
+<span class="fc" id="L32">    }</span>
+
+    /**
+     * Computes student's degree progress and remaining deficits.
+     *
+     * @param request degree audit request containing program and transcript
+     * @return audit result containing completed/remaining requirements
+     */
+    public DegreeAuditResult auditDegreeProgress(
+            final DegreeAuditRequest request
+    ) {
+<span class="pc bpc" id="L43" title="2 of 4 branches missed.">        if (request == null || request.getProgramId() == null) {</span>
+<span class="nc" id="L44">            throw new IllegalArgumentException(&quot;Program ID cannot be null.&quot;);</span>
+        }
+
+<span class="fc" id="L47">        final Optional&lt;DegreeProgram&gt; optProgram =</span>
+<span class="fc" id="L48">                courseRepository.findProgramById(</span>
+<span class="fc" id="L49">                        request.getProgramId(), request.getCatalogYear());</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (optProgram.isEmpty()) {</span>
+<span class="fc" id="L51">            throw new IllegalArgumentException(</span>
+<span class="fc" id="L52">                    &quot;Degree program not found: &quot; + request.getProgramId());</span>
+        }
+
+<span class="fc" id="L55">        final DegreeProgram program = optProgram.get();</span>
+<span class="fc" id="L56">        final Set&lt;String&gt; completedIds = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L57">        int creditsEarned = 0;</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (final CompletedCourse completed : request.getCompletedCourses()) {</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">            if (completed.getCourseId() == null) {</span>
+<span class="nc" id="L61">                continue;</span>
+            }
+<span class="fc" id="L63">            final String normId = completed.getCourseId().trim().toUpperCase();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">            if (isPassingGrade(completed.getGrade())) {</span>
+<span class="fc" id="L65">                completedIds.add(normId);</span>
+<span class="fc" id="L66">                int cred = completed.getCredits();</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">                if (cred &lt;= 0) {</span>
+<span class="nc" id="L68">                    final Optional&lt;Course&gt; c =</span>
+<span class="nc" id="L69">                            courseRepository.findCourseById(normId);</span>
+<span class="nc" id="L70">                    cred = c.map(Course::getCredits).orElse(3);</span>
+                }
+<span class="fc" id="L72">                creditsEarned += cred;</span>
+            }
+<span class="fc" id="L74">        }</span>
+
+<span class="fc" id="L76">        final List&lt;String&gt; completedReqs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L77">        final List&lt;String&gt; remainingReqs = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L78">        final List&lt;String&gt; coursesNeeded = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for (final String reqCourseId : program.getRequiredCourseIds()) {</span>
+<span class="fc" id="L81">            final String normReq = reqCourseId.trim().toUpperCase();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            if (completedIds.contains(normReq)) {</span>
+<span class="fc" id="L83">                completedReqs.add(normReq);</span>
+            } else {
+<span class="fc" id="L85">                remainingReqs.add(normReq);</span>
+<span class="fc" id="L86">                coursesNeeded.add(normReq);</span>
+            }
+<span class="fc" id="L88">        }</span>
+
+<span class="fc" id="L90">        final boolean allCoreMet = remainingReqs.isEmpty();</span>
+<span class="fc" id="L91">        final boolean creditsMet =</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">                creditsEarned &gt;= program.getTotalCreditsRequired();</span>
+<span class="pc bpc" id="L93" title="1 of 4 branches missed.">        final boolean completed = allCoreMet &amp;&amp; creditsMet;</span>
+
+<span class="pc bpc" id="L95" title="1 of 4 branches missed.">        if (!creditsMet &amp;&amp; allCoreMet) {</span>
+<span class="nc" id="L96">            final int deficit = program.getTotalCreditsRequired()</span>
+                    - creditsEarned;
+<span class="nc" id="L98">            coursesNeeded.add(&quot;Elective credits deficit: &quot; + deficit);</span>
+        }
+
+<span class="fc" id="L101">        return new DegreeAuditResult(</span>
+<span class="fc" id="L102">                program.getProgramId(),</span>
+                creditsEarned,
+<span class="fc" id="L104">                program.getTotalCreditsRequired(),</span>
+                completed,
+                completedReqs,
+                remainingReqs,
+                coursesNeeded
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Grade parsing and pass/fail evaluation
+    // -------------------------------------------------------------------------
+    private boolean isPassingGrade(final String grade) {
+<span class="pc bpc" id="L116" title="2 of 4 branches missed.">        if (grade == null || grade.isBlank()) {</span>
+<span class="nc" id="L117">            return false;</span>
+        }
+<span class="fc" id="L119">        final String g = grade.trim().toUpperCase();</span>
+<span class="pc bpc" id="L120" title="2 of 6 branches missed.">        return !g.startsWith(&quot;F&quot;) &amp;&amp; !g.equals(&quot;W&quot;) &amp;&amp; !g.equals(&quot;INC&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

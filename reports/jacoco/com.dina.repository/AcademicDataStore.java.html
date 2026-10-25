@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AcademicDataStore.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">dina</a> &gt; <a href="index.source.html" class="el_package">com.dina.repository</a> &gt; <span class="el_source">AcademicDataStore.java</span></div><h1>AcademicDataStore.java</h1><pre class="source lang-java linenums">package com.dina.repository;
+
+import com.dina.model.Course;
+import com.dina.model.DegreeProgram;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Repository;
+
+/**
+ * In-memory thread-safe implementation of CourseRepository.
+*/
+@Repository
+public final class AcademicDataStore implements CourseRepository {
+
+    /** Map of course ID to Course object. */
+<span class="fc" id="L21">    private final Map&lt;String, Course&gt; courses = new ConcurrentHashMap&lt;&gt;();</span>
+
+    /** Map of program ID and year compound key to DegreeProgram. */
+<span class="fc" id="L24">    private final Map&lt;String, DegreeProgram&gt; programs =</span>
+            new ConcurrentHashMap&lt;&gt;();
+
+    /**
+     * Initializes repository and populates initial academic catalog data.
+     */
+<span class="fc" id="L30">    public AcademicDataStore() {</span>
+<span class="fc" id="L31">        populateDefaultCourses();</span>
+<span class="fc" id="L32">        populateDefaultPrograms();</span>
+<span class="fc" id="L33">    }</span>
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Seed course catalog dictionary data
+    // -------------------------------------------------------------------------
+    private void populateDefaultCourses() {
+<span class="fc" id="L39">        saveCourse(new Course(</span>
+                &quot;COMSW1004&quot;, &quot;COMS&quot;, 1004,
+                &quot;Introduction to Computer Science in Java&quot;, 3,
+<span class="fc" id="L42">                Collections.emptyList()</span>
+<span class="fc" id="L43">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L44">         .withMeetingTimes(Collections.singletonList(&quot;MW 10:10-11:25&quot;))</span>
+<span class="fc" id="L45">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L46">         .withDescription(&quot;Basic programming concepts and algorithms.&quot;));</span>
+
+<span class="fc" id="L48">        saveCourse(new Course(</span>
+                &quot;COMSW3134&quot;, &quot;COMS&quot;, 3134,
+                &quot;Data Structures in Java&quot;, 3,
+<span class="fc" id="L51">                Collections.singletonList(&quot;COMSW1004&quot;)</span>
+<span class="fc" id="L52">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L53">         .withMeetingTimes(Collections.singletonList(&quot;TR 13:10-14:25&quot;))</span>
+<span class="fc" id="L54">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L55">         .withDescription(&quot;Data structures, hash tables, trees, graphs.&quot;));</span>
+
+<span class="fc" id="L57">        saveCourse(new Course(</span>
+                &quot;COMSW3157&quot;, &quot;COMS&quot;, 3157,
+                &quot;Advanced Programming in C and Systems&quot;, 4,
+<span class="fc" id="L60">                Collections.singletonList(&quot;COMSW3134&quot;)</span>
+<span class="fc" id="L61">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L62">         .withMeetingTimes(Collections.singletonList(&quot;MW 16:10-17:25&quot;))</span>
+<span class="fc" id="L63">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L64">         .withDescription(&quot;C programming, systems, and memory management.&quot;));</span>
+
+<span class="fc" id="L66">        saveCourse(new Course(</span>
+                &quot;COMSW3203&quot;, &quot;COMS&quot;, 3203,
+                &quot;Discrete Mathematics&quot;, 4,
+<span class="fc" id="L69">                Collections.singletonList(&quot;COMSW1004&quot;)</span>
+<span class="fc" id="L70">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L71">         .withMeetingTimes(Collections.singletonList(&quot;TR 10:10-11:25&quot;))</span>
+<span class="fc" id="L72">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L73">         .withDescription(&quot;Logic, sets, proofs, and combinatorics.&quot;));</span>
+
+<span class="fc" id="L75">        saveCourse(new Course(</span>
+                &quot;COMSW3261&quot;, &quot;COMS&quot;, 3261,
+                &quot;Computer Science Theory&quot;, 3,
+<span class="fc" id="L78">                Arrays.asList(&quot;COMSW3134&quot;, &quot;COMSW3203&quot;)</span>
+<span class="fc" id="L79">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L80">         .withMeetingTimes(Collections.singletonList(&quot;MW 14:40-15:55&quot;))</span>
+<span class="fc" id="L81">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L82">         .withDescription(&quot;Regular expressions, grammars, Turing machines.&quot;));</span>
+
+<span class="fc" id="L84">        saveCourse(new Course(</span>
+                &quot;COMSW3827&quot;, &quot;COMS&quot;, 3827,
+                &quot;Fundamentals of Computer Systems&quot;, 3,
+<span class="fc" id="L87">                Collections.singletonList(&quot;COMSW1004&quot;)</span>
+<span class="fc" id="L88">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L89">         .withMeetingTimes(Collections.singletonList(&quot;TR 14:40-15:55&quot;))</span>
+<span class="fc" id="L90">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L91">         .withDescription(&quot;Logic design, processors, pipelines, and buses.&quot;));</span>
+
+<span class="fc" id="L93">        saveCourse(new Course(</span>
+                &quot;COMSW4118&quot;, &quot;COMS&quot;, 4118,
+                &quot;Operating Systems&quot;, 3,
+<span class="fc" id="L96">                Arrays.asList(&quot;COMSW3157&quot;, &quot;COMSW3827&quot;)</span>
+<span class="fc" id="L97">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L98">         .withMeetingTimes(Collections.singletonList(&quot;TR 16:10-17:25&quot;))</span>
+<span class="fc" id="L99">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L100">         .withDescription(&quot;Concurrency, scheduling, virtualization.&quot;));</span>
+
+<span class="fc" id="L102">        saveCourse(new Course(</span>
+                &quot;COMSW4156&quot;, &quot;COMS&quot;, 4156,
+                &quot;Advanced Software Engineering&quot;, 3,
+<span class="fc" id="L105">                Collections.singletonList(&quot;COMSW3157&quot;)</span>
+<span class="fc" id="L106">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L107">         .withMeetingTimes(Collections.singletonList(&quot;MW 10:10-11:25&quot;))</span>
+<span class="fc" id="L108">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L109">         .withDescription(&quot;Service architecture, testing, CI/CD, teamwork.&quot;));</span>
+
+<span class="fc" id="L111">        saveCourse(new Course(</span>
+                &quot;COMSW4701&quot;, &quot;COMS&quot;, 4701,
+                &quot;Artificial Intelligence&quot;, 3,
+<span class="fc" id="L114">                Collections.singletonList(&quot;COMSW3134&quot;)</span>
+<span class="fc" id="L115">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L116">         .withMeetingTimes(Collections.singletonList(&quot;TR 11:40-12:55&quot;))</span>
+<span class="fc" id="L117">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L118">         .withDescription(&quot;Search, knowledge, and machine learning.&quot;));</span>
+
+<span class="fc" id="L120">        saveCourse(new Course(</span>
+                &quot;MATH1201&quot;, &quot;MATH&quot;, 1201,
+                &quot;Calculus III&quot;, 3,
+<span class="fc" id="L123">                Collections.emptyList()</span>
+<span class="fc" id="L124">        ).withSemestersOffered(Arrays.asList(&quot;FALL&quot;, &quot;SPRING&quot;))</span>
+<span class="fc" id="L125">         .withMeetingTimes(Collections.singletonList(&quot;MW 08:40-09:55&quot;))</span>
+<span class="fc" id="L126">         .withMinPassingGrade(&quot;C-&quot;)</span>
+<span class="fc" id="L127">         .withDescription(&quot;Multivariable calculus and vector functions.&quot;));</span>
+<span class="fc" id="L128">    }</span>
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Seed degree requirement program trees
+    // -------------------------------------------------------------------------
+    private void populateDefaultPrograms() {
+<span class="fc" id="L134">        saveProgram(new DegreeProgram(</span>
+                &quot;CS_BS&quot;,
+                &quot;Bachelor of Science in Computer Science&quot;,
+                2026,
+                120,
+<span class="fc" id="L139">                Arrays.asList(</span>
+                        &quot;COMSW1004&quot;, &quot;COMSW3134&quot;, &quot;COMSW3157&quot;,
+                        &quot;COMSW3203&quot;, &quot;COMSW3261&quot;, &quot;COMSW3827&quot;, &quot;COMSW4156&quot;
+                ),
+<span class="fc" id="L143">                Arrays.asList(&quot;COMSW4118&quot;, &quot;COMSW4701&quot;, &quot;MATH1201&quot;),</span>
+                &quot;C-&quot;
+        ));
+
+<span class="fc" id="L147">        saveProgram(new DegreeProgram(</span>
+                &quot;CS_MS&quot;,
+                &quot;Master of Science in Computer Science&quot;,
+                2026,
+                30,
+<span class="fc" id="L152">                Arrays.asList(&quot;COMSW4156&quot;, &quot;COMSW4118&quot;),</span>
+<span class="fc" id="L153">                Collections.singletonList(&quot;COMSW4701&quot;),</span>
+                &quot;B-&quot;
+        ));
+<span class="fc" id="L156">    }</span>
+
+    @Override
+    public List&lt;Course&gt; findAllCourses() {
+<span class="fc" id="L160">        return new ArrayList&lt;&gt;(courses.values());</span>
+    }
+
+    @Override
+    public Optional&lt;Course&gt; findCourseById(final String courseId) {
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (courseId == null) {</span>
+<span class="nc" id="L166">            return Optional.empty();</span>
+        }
+<span class="fc" id="L168">        return Optional.ofNullable(courses.get(courseId.toUpperCase()));</span>
+    }
+
+    @Override
+    public List&lt;Course&gt; searchCourses(
+            final String department,
+            final Integer level,
+            final Integer credits,
+            final String term,
+            final String keyword
+    ) {
+<span class="fc" id="L179">        final List&lt;Course&gt; results = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (final Course course : courses.values()) {</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">            if (matchesSearch(course, department, level, credits,</span>
+                    term, keyword)) {
+<span class="fc" id="L183">                results.add(course);</span>
+            }
+<span class="fc" id="L185">        }</span>
+<span class="fc" id="L186">        return results;</span>
+    }
+
+    private boolean matchesSearch(
+            final Course course,
+            final String department,
+            final Integer level,
+            final Integer credits,
+            final String term,
+            final String keyword
+    ) {
+<span class="pc bpc" id="L197" title="1 of 4 branches missed.">        if (department != null &amp;&amp; !department.isBlank()</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">                &amp;&amp; !course.getDepartment().equalsIgnoreCase(department)) {</span>
+<span class="fc" id="L199">            return false;</span>
+        }
+<span class="fc bfc" id="L201" title="All 4 branches covered.">        if (level != null &amp;&amp; !matchesLevel(course.getCourseNumber(), level)) {</span>
+<span class="fc" id="L202">            return false;</span>
+        }
+<span class="pc bpc" id="L204" title="3 of 4 branches missed.">        if (credits != null &amp;&amp; course.getCredits() != credits) {</span>
+<span class="nc" id="L205">            return false;</span>
+        }
+<span class="pc bpc" id="L207" title="3 of 4 branches missed.">        if (term != null &amp;&amp; !term.isBlank()</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">                &amp;&amp; !containsTerm(course.getSemestersOffered(), term)) {</span>
+<span class="nc" id="L209">            return false;</span>
+        }
+<span class="pc bpc" id="L211" title="1 of 4 branches missed.">        if (keyword != null &amp;&amp; !keyword.isBlank()) {</span>
+<span class="fc" id="L212">            final String lower = keyword.toLowerCase();</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">            final boolean titleMatch = course.getTitle() != null</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">                    &amp;&amp; course.getTitle().toLowerCase().contains(lower);</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">            final boolean descMatch = course.getDescription() != null</span>
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">                    &amp;&amp; course.getDescription().toLowerCase().contains(lower);</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">            final boolean idMatch = course.getCourseId() != null</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">                    &amp;&amp; course.getCourseId().toLowerCase().contains(lower);</span>
+<span class="pc bpc" id="L219" title="2 of 6 branches missed.">            if (!titleMatch &amp;&amp; !descMatch &amp;&amp; !idMatch) {</span>
+<span class="fc" id="L220">                return false;</span>
+            }
+        }
+<span class="fc" id="L223">        return true;</span>
+    }
+
+    private boolean matchesLevel(final int courseNumber, final int level) {
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        return (courseNumber / 1000) == (level / 1000);</span>
+    }
+
+    private boolean containsTerm(
+            final List&lt;String&gt; semesters, final String term) {
+<span class="nc" id="L232">        final String normalized = term.toUpperCase();</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        for (final String sem : semesters) {</span>
+<span class="nc bnc" id="L234" title="All 4 branches missed.">            if (normalized.contains(sem) || sem.contains(normalized)) {</span>
+<span class="nc" id="L235">                return true;</span>
+            }
+<span class="nc" id="L237">        }</span>
+<span class="nc" id="L238">        return false;</span>
+    }
+
+    @Override
+    public Optional&lt;DegreeProgram&gt; findProgramById(
+            final String programId,
+            final Integer catalogYear
+    ) {
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">        if (programId == null) {</span>
+<span class="nc" id="L247">            return Optional.empty();</span>
+        }
+<span class="fc" id="L249">        final String normalized = programId.toUpperCase();</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (catalogYear != null) {</span>
+<span class="fc" id="L251">            final String key = normalized + &quot;_&quot; + catalogYear;</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">            if (programs.containsKey(key)) {</span>
+<span class="fc" id="L253">                return Optional.of(programs.get(key));</span>
+            }
+        }
+        for (final Map.Entry&lt;String, DegreeProgram&gt; entry
+<span class="fc bfc" id="L257" title="All 2 branches covered.">                : programs.entrySet()) {</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">            if (entry.getValue().getProgramId().equalsIgnoreCase(normalized)) {</span>
+<span class="fc" id="L259">                return Optional.of(entry.getValue());</span>
+            }
+<span class="fc" id="L261">        }</span>
+<span class="fc" id="L262">        return Optional.empty();</span>
+    }
+
+    @Override
+    public void saveCourse(final Course course) {
+<span class="pc bpc" id="L267" title="2 of 4 branches missed.">        if (course != null &amp;&amp; course.getCourseId() != null) {</span>
+<span class="fc" id="L268">            courses.put(course.getCourseId().toUpperCase(), course);</span>
+        }
+<span class="fc" id="L270">    }</span>
+
+    @Override
+    public void saveProgram(final DegreeProgram program) {
+<span class="pc bpc" id="L274" title="2 of 4 branches missed.">        if (program != null &amp;&amp; program.getProgramId() != null) {</span>
+<span class="fc" id="L275">            final String key = program.getProgramId().toUpperCase()</span>
+<span class="fc" id="L276">                    + &quot;_&quot; + program.getCatalogYear();</span>
+<span class="fc" id="L277">            programs.put(key, program);</span>
+        }
+<span class="fc" id="L279">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

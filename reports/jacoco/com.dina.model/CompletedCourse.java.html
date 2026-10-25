@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CompletedCourse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">dina</a> &gt; <a href="index.source.html" class="el_package">com.dina.model</a> &gt; <span class="el_source">CompletedCourse.java</span></div><h1>CompletedCourse.java</h1><pre class="source lang-java linenums">package com.dina.model;
+
+import java.util.Objects;
+
+/**
+ * Represents a course completed by a student.
+ */
+public final class CompletedCourse {
+
+    /** Identifier of the completed course. */
+    private String courseId;
+
+    /** Term when the course was taken (e.g., FALL2025). */
+    private String term;
+
+    /** Letter grade earned (e.g., A, B+, P). */
+    private String grade;
+
+    /** Number of credits earned. */
+    private int credits;
+
+    /** Default constructor for deserialization. */
+<span class="nc" id="L23">    public CompletedCourse() {</span>
+<span class="nc" id="L24">    }</span>
+
+    /**
+     * Constructs a completed course record.
+     *
+     * @param courseId course identifier
+     * @param term academic term
+     * @param grade letter grade
+     * @param credits credit count
+     */
+    public CompletedCourse(
+            final String courseId,
+            final String term,
+            final String grade,
+            final int credits
+<span class="fc" id="L39">    ) {</span>
+<span class="fc" id="L40">        this.courseId = courseId;</span>
+<span class="fc" id="L41">        this.term = term;</span>
+<span class="fc" id="L42">        this.grade = grade;</span>
+<span class="fc" id="L43">        this.credits = credits;</span>
+<span class="fc" id="L44">    }</span>
+
+    /**
+     * Gets the course ID.
+     *
+     * @return course ID
+     */
+    public String getCourseId() {
+<span class="fc" id="L52">        return courseId;</span>
+    }
+
+    /**
+     * Sets the course ID.
+     *
+     * @param courseId course ID
+     */
+    public void setCourseId(final String courseId) {
+<span class="fc" id="L61">        this.courseId = courseId;</span>
+<span class="fc" id="L62">    }</span>
+
+    /**
+     * Gets the term.
+     *
+     * @return academic term
+     */
+    public String getTerm() {
+<span class="fc" id="L70">        return term;</span>
+    }
+
+    /**
+     * Sets the term.
+     *
+     * @param term academic term
+     */
+    public void setTerm(final String term) {
+<span class="fc" id="L79">        this.term = term;</span>
+<span class="fc" id="L80">    }</span>
+
+    /**
+     * Gets the letter grade.
+     *
+     * @return letter grade
+     */
+    public String getGrade() {
+<span class="fc" id="L88">        return grade;</span>
+    }
+
+    /**
+     * Sets the letter grade.
+     *
+     * @param grade letter grade
+     */
+    public void setGrade(final String grade) {
+<span class="fc" id="L97">        this.grade = grade;</span>
+<span class="fc" id="L98">    }</span>
+
+    /**
+     * Gets credits earned.
+     *
+     * @return credits earned
+     */
+    public int getCredits() {
+<span class="fc" id="L106">        return credits;</span>
+    }
+
+    /**
+     * Sets credits earned.
+     *
+     * @param credits credits earned
+     */
+    public void setCredits(final int credits) {
+<span class="fc" id="L115">        this.credits = credits;</span>
+<span class="fc" id="L116">    }</span>
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Boilerplate equals and hashCode
+    // -------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(final Object obj) {
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (this == obj) {</span>
+<span class="fc" id="L125">            return true;</span>
+        }
+<span class="fc bfc" id="L127" title="All 4 branches covered.">        if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="fc" id="L128">            return false;</span>
+        }
+<span class="fc" id="L130">        final CompletedCourse that = (CompletedCourse) obj;</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        return credits == that.credits</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">                &amp;&amp; Objects.equals(courseId, that.courseId)</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">                &amp;&amp; Objects.equals(term, that.term)</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">                &amp;&amp; Objects.equals(grade, that.grade);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L139">        return Objects.hash(courseId, term, grade, credits);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

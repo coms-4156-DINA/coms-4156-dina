@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CourseService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">dina</a> &gt; <a href="index.source.html" class="el_package">com.dina.service</a> &gt; <span class="el_source">CourseService.java</span></div><h1>CourseService.java</h1><pre class="source lang-java linenums">package com.dina.service;
+
+import com.dina.model.Course;
+import com.dina.repository.CourseRepository;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.stereotype.Service;
+
+/**
+ * Service implementation for course search and catalog retrieval.
+*/
+@Service
+public final class CourseService {
+
+    /** Repository for accessing course data. */
+    private final CourseRepository courseRepository;
+
+    /**
+     * Constructs CourseService with injected repository.
+     *
+     * @param courseRepository course data repository
+     */
+<span class="fc" id="L23">    public CourseService(final CourseRepository courseRepository) {</span>
+<span class="fc" id="L24">        this.courseRepository = courseRepository;</span>
+<span class="fc" id="L25">    }</span>
+
+    /**
+     * Retrieves all available courses.
+     *
+     * @return list of courses
+     */
+    public List&lt;Course&gt; getAllCourses() {
+<span class="fc" id="L33">        return courseRepository.findAllCourses();</span>
+    }
+
+    /**
+     * Finds a course by ID.
+     *
+     * @param courseId course identifier
+     * @return optional course
+     */
+    public Optional&lt;Course&gt; getCourseById(final String courseId) {
+<span class="fc" id="L43">        return courseRepository.findCourseById(courseId);</span>
+    }
+
+    /**
+     * Searches courses by multiple filter criteria.
+     *
+     * @param department department filter
+     * @param level level filter
+     * @param credits credit filter
+     * @param term term filter
+     * @param keyword keyword filter
+     * @return list of matching courses
+     */
+    public List&lt;Course&gt; searchCourses(
+            final String department,
+            final Integer level,
+            final Integer credits,
+            final String term,
+            final String keyword
+    ) {
+<span class="fc" id="L63">        return courseRepository.searchCourses(</span>
+                department, level, credits, term, keyword);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

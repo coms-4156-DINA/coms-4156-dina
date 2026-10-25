@@ -1,0 +1,270 @@
+{
+	"info": {
+		"_postman_id": "dina-api-test-suite-v1",
+		"name": "DINA Academic Planning Service Test Suite",
+		"description": "Automated Postman test suite exercising MVP endpoints for DINA: GET /courses, GET /plans/validate, POST /plans/validate, GET /degree-audit, POST /degree-audit, and GET /programs/{id}/requirements.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Search All Courses",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses",
+					"host": ["{{baseUrl}}"],
+					"path": ["courses"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Courses list is returned\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"    pm.expect(jsonData.length).to.be.at.least(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Search Courses by Department & Keyword",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses?department=COMS&keyword=Software",
+					"host": ["{{baseUrl}}"],
+					"path": ["courses"],
+					"query": [
+						{"key": "department", "value": "COMS"},
+						{"key": "keyword", "value": "Software"}
+					]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Matching course found\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData[0].courseId).to.eql(\"COMSW4156\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Get Course by ID - Found",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses/COMSW4156",
+					"host": ["{{baseUrl}}"],
+					"path": ["courses", "COMSW4156"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Course attributes match\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.courseId).to.eql(\"COMSW4156\");",
+							"    pm.expect(jsonData.credits).to.eql(3);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Get Course by ID - Not Found",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/courses/UNKNOWN_COURSE",
+					"host": ["{{baseUrl}}"],
+					"path": ["courses", "UNKNOWN_COURSE"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Validate Plan - Valid Schedule",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/plans/validate?courseIds=COMSW3134&completedCourses=COMSW1004&targetTerm=FALL2026",
+					"host": ["{{baseUrl}}"],
+					"path": ["plans", "validate"],
+					"query": [
+						{"key": "courseIds", "value": "COMSW3134"},
+						{"key": "completedCourses", "value": "COMSW1004"},
+						{"key": "targetTerm", "value": "FALL2026"}
+					]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Schedule is valid\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.valid).to.be.true;",
+							"    pm.expect(jsonData.issues.length).to.eql(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "6. Validate Plan - Unmet Prereq & Time Conflict (POST)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{"key": "Content-Type", "value": "application/json"}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"courseIds\": [\"COMSW4156\", \"COMSW1004\"],\n    \"completedCourses\": [],\n    \"targetTerm\": \"FALL2026\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/plans/validate",
+					"host": ["{{baseUrl}}"],
+					"path": ["plans", "validate"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Schedule has detected issues\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.valid).to.be.false;",
+							"    pm.expect(jsonData.issues.length).to.be.at.least(1);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "7. Degree Audit - Completed Progress",
+			"request": {
+				"method": "POST",
+				"header": [
+					{"key": "Content-Type", "value": "application/json"}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"programId\": \"CS_MS\",\n    \"catalogYear\": 2026,\n    \"completedCourses\": [\n        {\"courseId\": \"COMSW4156\", \"term\": \"FALL2025\", \"grade\": \"A\", \"credits\": 3},\n        {\"courseId\": \"COMSW4118\", \"term\": \"SPRING2026\", \"grade\": \"A\", \"credits\": 3}\n    ]\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/degree-audit",
+					"host": ["{{baseUrl}}"],
+					"path": ["degree-audit"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Degree program identified\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.programId).to.eql(\"CS_MS\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		},
+		{
+			"name": "8. Retrieve Degree Requirements",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/programs/CS_BS/requirements",
+					"host": ["{{baseUrl}}"],
+					"path": ["programs", "CS_BS", "requirements"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Requirements returned\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.programId).to.eql(\"CS_BS\");",
+							"    pm.expect(jsonData.totalCreditsRequired).to.eql(120);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		}
+	]
+}

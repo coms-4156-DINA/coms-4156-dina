@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DegreeAuditResult.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">dina</a> &gt; <a href="index.source.html" class="el_package">com.dina.model</a> &gt; <span class="el_source">DegreeAuditResult.java</span></div><h1>DegreeAuditResult.java</h1><pre class="source lang-java linenums">package com.dina.model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Result output of a degree progress audit.
+ */
+public final class DegreeAuditResult {
+
+    /** Identifier of the audited degree program. */
+    private String programId;
+
+    /** Total academic credits earned toward the degree. */
+    private int creditsEarned;
+
+    /** Total academic credits required for the degree. */
+    private int creditsRequired;
+
+    /** True if all degree requirements and credit quotas are met. */
+    private boolean degreeCompleted;
+
+    /** Completed requirements (names or course codes). */
+<span class="pc" id="L25">    private List&lt;String&gt; completedRequirements = new ArrayList&lt;&gt;();</span>
+
+    /** Remaining unmet requirements. */
+<span class="pc" id="L28">    private List&lt;String&gt; remainingRequirements = new ArrayList&lt;&gt;();</span>
+
+    /** Courses or categories still needed for graduation. */
+<span class="pc" id="L31">    private List&lt;String&gt; coursesStillNeeded = new ArrayList&lt;&gt;();</span>
+
+    /** Default constructor for deserialization. */
+<span class="nc" id="L34">    public DegreeAuditResult() {</span>
+<span class="nc" id="L35">    }</span>
+
+    /**
+     * Constructs a DegreeAuditResult.
+     *
+     * @param programId program ID
+     * @param creditsEarned earned credits
+     * @param creditsRequired required credits
+     * @param degreeCompleted degree completion flag
+     * @param completedRequirements satisfied requirements
+     * @param remainingRequirements unsatisfied requirements
+     * @param coursesStillNeeded remaining needed courses
+     */
+    public DegreeAuditResult(
+            final String programId,
+            final int creditsEarned,
+            final int creditsRequired,
+            final boolean degreeCompleted,
+            final List&lt;String&gt; completedRequirements,
+            final List&lt;String&gt; remainingRequirements,
+            final List&lt;String&gt; coursesStillNeeded
+<span class="fc" id="L56">    ) {</span>
+<span class="fc" id="L57">        this.programId = programId;</span>
+<span class="fc" id="L58">        this.creditsEarned = creditsEarned;</span>
+<span class="fc" id="L59">        this.creditsRequired = creditsRequired;</span>
+<span class="fc" id="L60">        this.degreeCompleted = degreeCompleted;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (completedRequirements != null) {</span>
+<span class="fc" id="L62">            this.completedRequirements = new ArrayList&lt;&gt;(</span>
+                    completedRequirements);
+        }
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (remainingRequirements != null) {</span>
+<span class="fc" id="L66">            this.remainingRequirements = new ArrayList&lt;&gt;(</span>
+                    remainingRequirements);
+        }
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (coursesStillNeeded != null) {</span>
+<span class="fc" id="L70">            this.coursesStillNeeded = new ArrayList&lt;&gt;(coursesStillNeeded);</span>
+        }
+<span class="fc" id="L72">    }</span>
+
+    /**
+     * Gets program ID.
+     *
+     * @return program ID
+     */
+    public String getProgramId() {
+<span class="fc" id="L80">        return programId;</span>
+    }
+
+    /**
+     * Sets program ID.
+     *
+     * @param programId program ID
+     */
+    public void setProgramId(final String programId) {
+<span class="fc" id="L89">        this.programId = programId;</span>
+<span class="fc" id="L90">    }</span>
+
+    /**
+     * Gets credits earned.
+     *
+     * @return credits earned
+     */
+    public int getCreditsEarned() {
+<span class="fc" id="L98">        return creditsEarned;</span>
+    }
+
+    /**
+     * Sets credits earned.
+     *
+     * @param creditsEarned credits earned
+     */
+    public void setCreditsEarned(final int creditsEarned) {
+<span class="fc" id="L107">        this.creditsEarned = creditsEarned;</span>
+<span class="fc" id="L108">    }</span>
+
+    /**
+     * Gets credits required.
+     *
+     * @return credits required
+     */
+    public int getCreditsRequired() {
+<span class="fc" id="L116">        return creditsRequired;</span>
+    }
+
+    /**
+     * Sets credits required.
+     *
+     * @param creditsRequired credits required
+     */
+    public void setCreditsRequired(final int creditsRequired) {
+<span class="fc" id="L125">        this.creditsRequired = creditsRequired;</span>
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * Checks if degree completed.
+     *
+     * @return true if degree completed
+     */
+    public boolean isDegreeCompleted() {
+<span class="fc" id="L134">        return degreeCompleted;</span>
+    }
+
+    /**
+     * Sets degree completion flag.
+     *
+     * @param degreeCompleted degree completion flag
+     */
+    public void setDegreeCompleted(final boolean degreeCompleted) {
+<span class="fc" id="L143">        this.degreeCompleted = degreeCompleted;</span>
+<span class="fc" id="L144">    }</span>
+
+    /**
+     * Gets completed requirements.
+     *
+     * @return completed requirements
+     */
+    public List&lt;String&gt; getCompletedRequirements() {
+<span class="fc" id="L152">        return Collections.unmodifiableList(completedRequirements);</span>
+    }
+
+    /**
+     * Sets completed requirements.
+     *
+     * @param completedRequirements completed requirements
+     */
+    public void setCompletedRequirements(
+            final List&lt;String&gt; completedRequirements) {
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        this.completedRequirements = completedRequirements == null</span>
+<span class="pc" id="L163">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(completedRequirements);</span>
+<span class="fc" id="L164">    }</span>
+
+    /**
+     * Gets remaining requirements.
+     *
+     * @return remaining requirements
+     */
+    public List&lt;String&gt; getRemainingRequirements() {
+<span class="fc" id="L172">        return Collections.unmodifiableList(remainingRequirements);</span>
+    }
+
+    /**
+     * Sets remaining requirements.
+     *
+     * @param remainingRequirements remaining requirements
+     */
+    public void setRemainingRequirements(
+            final List&lt;String&gt; remainingRequirements) {
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        this.remainingRequirements = remainingRequirements == null</span>
+<span class="pc" id="L183">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(remainingRequirements);</span>
+<span class="fc" id="L184">    }</span>
+
+    /**
+     * Gets courses still needed.
+     *
+     * @return courses still needed
+     */
+    public List&lt;String&gt; getCoursesStillNeeded() {
+<span class="fc" id="L192">        return Collections.unmodifiableList(coursesStillNeeded);</span>
+    }
+
+    /**
+     * Sets courses still needed.
+     *
+     * @param coursesStillNeeded courses still needed
+     */
+    public void setCoursesStillNeeded(
+            final List&lt;String&gt; coursesStillNeeded) {
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        this.coursesStillNeeded = coursesStillNeeded == null</span>
+<span class="pc" id="L203">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(coursesStillNeeded);</span>
+<span class="fc" id="L204">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Course.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">dina</a> &gt; <a href="index.source.html" class="el_package">com.dina.model</a> &gt; <span class="el_source">Course.java</span></div><h1>Course.java</h1><pre class="source lang-java linenums">package com.dina.model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Represents an academic course in the course catalog.
+ */
+public final class Course {
+
+    /** Unique identifier for the course (e.g., COMSW4156). */
+    private String courseId;
+
+    /** Department offering the course (e.g., COMS). */
+    private String department;
+
+    /** Numeric course level (e.g., 4156). */
+    private int courseNumber;
+
+    /** Title of the course. */
+    private String title;
+
+    /** Number of academic credits. */
+    private int credits;
+
+    /** List of prerequisite course IDs. */
+<span class="pc" id="L29">    private List&lt;String&gt; prerequisites = new ArrayList&lt;&gt;();</span>
+
+    /** Semesters when the course is offered (e.g., FALL, SPRING). */
+<span class="pc" id="L32">    private List&lt;String&gt; semestersOffered = new ArrayList&lt;&gt;();</span>
+
+    /** Meeting time slots (e.g., MW 10:10-11:25). */
+<span class="pc" id="L35">    private List&lt;String&gt; meetingTimes = new ArrayList&lt;&gt;();</span>
+
+    /** Minimum grade required to satisfy course passing standard. */
+    private String minPassingGrade;
+
+    /** Description and syllabus overview. */
+    private String description;
+
+    /** Default constructor for deserialization. */
+<span class="nc" id="L44">    public Course() {</span>
+<span class="nc" id="L45">    }</span>
+
+    /**
+     * Constructs a Course with primary attributes.
+     *
+     * @param courseId unique course identifier
+     * @param department offering department
+     * @param courseNumber course number
+     * @param title course title
+     * @param credits credit value
+     * @param prerequisites prerequisite course IDs
+     */
+    public Course(
+            final String courseId,
+            final String department,
+            final int courseNumber,
+            final String title,
+            final int credits,
+            final List&lt;String&gt; prerequisites
+<span class="fc" id="L64">    ) {</span>
+<span class="fc" id="L65">        this.courseId = courseId;</span>
+<span class="fc" id="L66">        this.department = department;</span>
+<span class="fc" id="L67">        this.courseNumber = courseNumber;</span>
+<span class="fc" id="L68">        this.title = title;</span>
+<span class="fc" id="L69">        this.credits = credits;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (prerequisites != null) {</span>
+<span class="fc" id="L71">            this.prerequisites = new ArrayList&lt;&gt;(prerequisites);</span>
+        }
+<span class="fc" id="L73">    }</span>
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Fluent builder helper methods
+    // -------------------------------------------------------------------------
+
+    /**
+     * Sets semesters offered and returns this course.
+     *
+     * @param semesters list of semesters offered
+     * @return this course instance
+     */
+    public Course withSemestersOffered(final List&lt;String&gt; semesters) {
+<span class="fc" id="L86">        setSemestersOffered(semesters);</span>
+<span class="fc" id="L87">        return this;</span>
+    }
+
+    /**
+     * Sets meeting times and returns this course.
+     *
+     * @param times list of meeting time slots
+     * @return this course instance
+     */
+    public Course withMeetingTimes(final List&lt;String&gt; times) {
+<span class="fc" id="L97">        setMeetingTimes(times);</span>
+<span class="fc" id="L98">        return this;</span>
+    }
+
+    /**
+     * Sets min passing grade and returns this course.
+     *
+     * @param grade minimum passing grade
+     * @return this course instance
+     */
+    public Course withMinPassingGrade(final String grade) {
+<span class="fc" id="L108">        this.minPassingGrade = grade;</span>
+<span class="fc" id="L109">        return this;</span>
+    }
+
+    /**
+     * Sets description and returns this course.
+     *
+     * @param desc course description
+     * @return this course instance
+     */
+    public Course withDescription(final String desc) {
+<span class="fc" id="L119">        this.description = desc;</span>
+<span class="fc" id="L120">        return this;</span>
+    }
+
+    /**
+     * Gets the course ID.
+     *
+     * @return course ID
+     */
+    public String getCourseId() {
+<span class="fc" id="L129">        return courseId;</span>
+    }
+
+    /**
+     * Sets the course ID.
+     *
+     * @param courseId course identifier
+     */
+    public void setCourseId(final String courseId) {
+<span class="fc" id="L138">        this.courseId = courseId;</span>
+<span class="fc" id="L139">    }</span>
+
+    /**
+     * Gets the department code.
+     *
+     * @return department code
+     */
+    public String getDepartment() {
+<span class="fc" id="L147">        return department;</span>
+    }
+
+    /**
+     * Sets the department code.
+     *
+     * @param department department code
+     */
+    public void setDepartment(final String department) {
+<span class="fc" id="L156">        this.department = department;</span>
+<span class="fc" id="L157">    }</span>
+
+    /**
+     * Gets the course number.
+     *
+     * @return course number
+     */
+    public int getCourseNumber() {
+<span class="fc" id="L165">        return courseNumber;</span>
+    }
+
+    /**
+     * Sets the course number.
+     *
+     * @param courseNumber course number
+     */
+    public void setCourseNumber(final int courseNumber) {
+<span class="fc" id="L174">        this.courseNumber = courseNumber;</span>
+<span class="fc" id="L175">    }</span>
+
+    /**
+     * Gets the course title.
+     *
+     * @return course title
+     */
+    public String getTitle() {
+<span class="fc" id="L183">        return title;</span>
+    }
+
+    /**
+     * Sets the course title.
+     *
+     * @param title course title
+     */
+    public void setTitle(final String title) {
+<span class="fc" id="L192">        this.title = title;</span>
+<span class="fc" id="L193">    }</span>
+
+    /**
+     * Gets the credit count.
+     *
+     * @return credit count
+     */
+    public int getCredits() {
+<span class="fc" id="L201">        return credits;</span>
+    }
+
+    /**
+     * Sets the credit count.
+     *
+     * @param credits credit count
+     */
+    public void setCredits(final int credits) {
+<span class="fc" id="L210">        this.credits = credits;</span>
+<span class="fc" id="L211">    }</span>
+
+    /**
+     * Gets the list of prerequisite IDs.
+     *
+     * @return list of prerequisites
+     */
+    public List&lt;String&gt; getPrerequisites() {
+<span class="fc" id="L219">        return Collections.unmodifiableList(prerequisites);</span>
+    }
+
+    /**
+     * Sets the prerequisite IDs.
+     *
+     * @param prerequisites prerequisite IDs
+     */
+    public void setPrerequisites(final List&lt;String&gt; prerequisites) {
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">        this.prerequisites = prerequisites == null</span>
+<span class="pc" id="L229">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(prerequisites);</span>
+<span class="fc" id="L230">    }</span>
+
+    /**
+     * Gets the semesters offered.
+     *
+     * @return list of semesters offered
+     */
+    public List&lt;String&gt; getSemestersOffered() {
+<span class="fc" id="L238">        return Collections.unmodifiableList(semestersOffered);</span>
+    }
+
+    /**
+     * Sets the semesters offered.
+     *
+     * @param semestersOffered list of semesters offered
+     */
+    public void setSemestersOffered(final List&lt;String&gt; semestersOffered) {
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        this.semestersOffered = semestersOffered == null</span>
+<span class="fc" id="L248">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(semestersOffered);</span>
+<span class="fc" id="L249">    }</span>
+
+    /**
+     * Gets meeting time slots.
+     *
+     * @return list of meeting time slots
+     */
+    public List&lt;String&gt; getMeetingTimes() {
+<span class="fc" id="L257">        return Collections.unmodifiableList(meetingTimes);</span>
+    }
+
+    /**
+     * Sets meeting time slots.
+     *
+     * @param meetingTimes meeting times
+     */
+    public void setMeetingTimes(final List&lt;String&gt; meetingTimes) {
+<span class="fc bfc" id="L266" title="All 2 branches covered.">        this.meetingTimes = meetingTimes == null</span>
+<span class="fc" id="L267">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(meetingTimes);</span>
+<span class="fc" id="L268">    }</span>
+
+    /**
+     * Gets minimum passing grade.
+     *
+     * @return minimum passing grade
+     */
+    public String getMinPassingGrade() {
+<span class="fc" id="L276">        return minPassingGrade;</span>
+    }
+
+    /**
+     * Sets minimum passing grade.
+     *
+     * @param minPassingGrade minimum passing grade
+     */
+    public void setMinPassingGrade(final String minPassingGrade) {
+<span class="fc" id="L285">        this.minPassingGrade = minPassingGrade;</span>
+<span class="fc" id="L286">    }</span>
+
+    /**
+     * Gets description.
+     *
+     * @return description
+     */
+    public String getDescription() {
+<span class="fc" id="L294">        return description;</span>
+    }
+
+    /**
+     * Sets description.
+     *
+     * @param description course description
+     */
+    public void setDescription(final String description) {
+<span class="fc" id="L303">        this.description = description;</span>
+<span class="fc" id="L304">    }</span>
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Boilerplate equals and hashCode
+    // -------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(final Object obj) {
+<span class="fc bfc" id="L312" title="All 2 branches covered.">        if (this == obj) {</span>
+<span class="fc" id="L313">            return true;</span>
+        }
+<span class="fc bfc" id="L315" title="All 4 branches covered.">        if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="fc" id="L316">            return false;</span>
+        }
+<span class="fc" id="L318">        final Course course = (Course) obj;</span>
+<span class="fc" id="L319">        return Objects.equals(courseId, course.courseId);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L324">        return Objects.hash(courseId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
