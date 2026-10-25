@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidationIssue.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">dina</a> &gt; <a href="index.source.html" class="el_package">com.dina.model</a> &gt; <span class="el_source">ValidationIssue.java</span></div><h1>ValidationIssue.java</h1><pre class="source lang-java linenums">package com.dina.model;
+
+import java.util.Objects;
+
+/**
+ * Represents a specific conflict or unmet prerequisite in a plan.
+ */
+public final class ValidationIssue {
+
+    /** Type of validation issue (e.g., UNMET_PREREQUISITE). */
+    private String type;
+
+    /** Course ID causing or associated with the issue. */
+    private String courseId;
+
+    /** Secondary course ID involved in a conflict (if applicable). */
+    private String conflictingCourseId;
+
+    /** Human-readable explanation of why the check failed. */
+    private String message;
+
+    /** Default constructor for deserialization. */
+<span class="nc" id="L23">    public ValidationIssue() {</span>
+<span class="nc" id="L24">    }</span>
+
+    /**
+     * Constructs a ValidationIssue.
+     *
+     * @param type category of issue
+     * @param courseId associated course ID
+     * @param conflictingCourseId conflicting course ID
+     * @param message explanatory message
+     */
+    public ValidationIssue(
+            final String type,
+            final String courseId,
+            final String conflictingCourseId,
+            final String message
+<span class="fc" id="L39">    ) {</span>
+<span class="fc" id="L40">        this.type = type;</span>
+<span class="fc" id="L41">        this.courseId = courseId;</span>
+<span class="fc" id="L42">        this.conflictingCourseId = conflictingCourseId;</span>
+<span class="fc" id="L43">        this.message = message;</span>
+<span class="fc" id="L44">    }</span>
+
+    /**
+     * Gets issue type.
+     *
+     * @return issue type
+     */
+    public String getType() {
+<span class="fc" id="L52">        return type;</span>
+    }
+
+    /**
+     * Sets issue type.
+     *
+     * @param type issue type
+     */
+    public void setType(final String type) {
+<span class="fc" id="L61">        this.type = type;</span>
+<span class="fc" id="L62">    }</span>
+
+    /**
+     * Gets associated course ID.
+     *
+     * @return course ID
+     */
+    public String getCourseId() {
+<span class="fc" id="L70">        return courseId;</span>
+    }
+
+    /**
+     * Sets associated course ID.
+     *
+     * @param courseId course ID
+     */
+    public void setCourseId(final String courseId) {
+<span class="fc" id="L79">        this.courseId = courseId;</span>
+<span class="fc" id="L80">    }</span>
+
+    /**
+     * Gets conflicting course ID.
+     *
+     * @return conflicting course ID
+     */
+    public String getConflictingCourseId() {
+<span class="fc" id="L88">        return conflictingCourseId;</span>
+    }
+
+    /**
+     * Sets conflicting course ID.
+     *
+     * @param conflictingCourseId conflicting course ID
+     */
+    public void setConflictingCourseId(final String conflictingCourseId) {
+<span class="fc" id="L97">        this.conflictingCourseId = conflictingCourseId;</span>
+<span class="fc" id="L98">    }</span>
+
+    /**
+     * Gets explanation message.
+     *
+     * @return explanation message
+     */
+    public String getMessage() {
+<span class="fc" id="L106">        return message;</span>
+    }
+
+    /**
+     * Sets explanation message.
+     *
+     * @param message explanation message
+     */
+    public void setMessage(final String message) {
+<span class="fc" id="L115">        this.message = message;</span>
+<span class="fc" id="L116">    }</span>
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Boilerplate equals and hashCode
+    // -------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(final Object obj) {
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (this == obj) {</span>
+<span class="fc" id="L125">            return true;</span>
+        }
+<span class="fc bfc" id="L127" title="All 4 branches covered.">        if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="fc" id="L128">            return false;</span>
+        }
+<span class="fc" id="L130">        final ValidationIssue that = (ValidationIssue) obj;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        return Objects.equals(type, that.type)</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">                &amp;&amp; Objects.equals(courseId, that.courseId)</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">                &amp;&amp; Objects.equals(</span>
+                    conflictingCourseId, that.conflictingCourseId)
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">                &amp;&amp; Objects.equals(message, that.message);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L140">        return Objects.hash(type, courseId, conflictingCourseId, message);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

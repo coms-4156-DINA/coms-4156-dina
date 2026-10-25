@@ -10,6 +10,9 @@ The service exposes its capabilities exclusively to external programs (there is 
 
 - Keep changes to the code base minimal and incremental. Do not take development cost into account.
 - Do not commit to the repo unless explicitly asked.
+- **Strict Style Compliance:** Every line of Java code MUST be <= 80 characters. Checkstyle will fail the build otherwise.
+- **Self-Documenting Code:** All classes, methods, and member variables must include Javadoc comments. All method parameters must be declared `final`.
+- **Pre-PR Verification:** Always run `./gradlew checkstyleMain test` to verify zero violations and 100% test pass rate before opening a PR.
 
 ### Persistent Datastore
 

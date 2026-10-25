@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ScheduleValidationRequest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">dina</a> &gt; <a href="index.source.html" class="el_package">com.dina.model</a> &gt; <span class="el_source">ScheduleValidationRequest.java</span></div><h1>ScheduleValidationRequest.java</h1><pre class="source lang-java linenums">package com.dina.model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Request payload for validating a proposed semester schedule.
+ */
+public final class ScheduleValidationRequest {
+
+    /** Proposed course IDs for the target term. */
+<span class="fc" id="L13">    private List&lt;String&gt; courseIds = new ArrayList&lt;&gt;();</span>
+
+    /** List of courses already completed by the student. */
+<span class="fc" id="L16">    private List&lt;CompletedCourse&gt; completedCourses = new ArrayList&lt;&gt;();</span>
+
+    /** Courses currently enrolled in by the student. */
+<span class="fc" id="L19">    private List&lt;String&gt; currentEnrollment = new ArrayList&lt;&gt;();</span>
+
+    /** Target semester term to validate (e.g., FALL2026). */
+    private String targetTerm;
+
+    /** Default constructor for deserialization. */
+<span class="fc" id="L25">    public ScheduleValidationRequest() {</span>
+<span class="fc" id="L26">    }</span>
+
+    /**
+     * Constructs a ScheduleValidationRequest.
+     *
+     * @param courseIds proposed course IDs
+     * @param completedCourses completed courses
+     * @param currentEnrollment current enrollment course IDs
+     * @param targetTerm target academic term
+     */
+    public ScheduleValidationRequest(
+            final List&lt;String&gt; courseIds,
+            final List&lt;CompletedCourse&gt; completedCourses,
+            final List&lt;String&gt; currentEnrollment,
+            final String targetTerm
+<span class="fc" id="L41">    ) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (courseIds != null) {</span>
+<span class="fc" id="L43">            this.courseIds = new ArrayList&lt;&gt;(courseIds);</span>
+        }
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (completedCourses != null) {</span>
+<span class="fc" id="L46">            this.completedCourses = new ArrayList&lt;&gt;(completedCourses);</span>
+        }
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (currentEnrollment != null) {</span>
+<span class="fc" id="L49">            this.currentEnrollment = new ArrayList&lt;&gt;(currentEnrollment);</span>
+        }
+<span class="fc" id="L51">        this.targetTerm = targetTerm;</span>
+<span class="fc" id="L52">    }</span>
+
+    /**
+     * Gets proposed course IDs.
+     *
+     * @return proposed course IDs
+     */
+    public List&lt;String&gt; getCourseIds() {
+<span class="fc" id="L60">        return Collections.unmodifiableList(courseIds);</span>
+    }
+
+    /**
+     * Sets proposed course IDs.
+     *
+     * @param courseIds proposed course IDs
+     */
+    public void setCourseIds(final List&lt;String&gt; courseIds) {
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        this.courseIds = courseIds == null</span>
+<span class="fc" id="L70">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(courseIds);</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * Gets completed courses.
+     *
+     * @return completed courses
+     */
+    public List&lt;CompletedCourse&gt; getCompletedCourses() {
+<span class="fc" id="L79">        return Collections.unmodifiableList(completedCourses);</span>
+    }
+
+    /**
+     * Sets completed courses.
+     *
+     * @param completedCourses completed courses
+     */
+    public void setCompletedCourses(
+            final List&lt;CompletedCourse&gt; completedCourses) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        this.completedCourses = completedCourses == null</span>
+<span class="fc" id="L90">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(completedCourses);</span>
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * Gets current enrollment course IDs.
+     *
+     * @return current enrollment IDs
+     */
+    public List&lt;String&gt; getCurrentEnrollment() {
+<span class="fc" id="L99">        return Collections.unmodifiableList(currentEnrollment);</span>
+    }
+
+    /**
+     * Sets current enrollment course IDs.
+     *
+     * @param currentEnrollment current enrollment IDs
+     */
+    public void setCurrentEnrollment(final List&lt;String&gt; currentEnrollment) {
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        this.currentEnrollment = currentEnrollment == null</span>
+<span class="fc" id="L109">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(currentEnrollment);</span>
+<span class="fc" id="L110">    }</span>
+
+    /**
+     * Gets target term.
+     *
+     * @return target term
+     */
+    public String getTargetTerm() {
+<span class="fc" id="L118">        return targetTerm;</span>
+    }
+
+    /**
+     * Sets target term.
+     *
+     * @param targetTerm target term
+     */
+    public void setTargetTerm(final String targetTerm) {
+<span class="fc" id="L127">        this.targetTerm = targetTerm;</span>
+<span class="fc" id="L128">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

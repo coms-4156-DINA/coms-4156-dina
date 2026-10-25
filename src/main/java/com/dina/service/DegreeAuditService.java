@@ -1,0 +1,122 @@
+package com.dina.service;
+
+import com.dina.model.CompletedCourse;
+import com.dina.model.Course;
+import com.dina.model.DegreeAuditRequest;
+import com.dina.model.DegreeAuditResult;
+import com.dina.model.DegreeProgram;
+import com.dina.repository.CourseRepository;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import org.springframework.stereotype.Service;
+
+/**
+ * Service calculating degree progress against curriculum rules.
+*/
+@Service
+public final class DegreeAuditService {
+
+    /** Repository for accessing course and degree program data. */
+    private final CourseRepository courseRepository;
+
+    /**
+     * Constructs DegreeAuditService with repository.
+     *
+     * @param courseRepository course data repository
+     */
+    public DegreeAuditService(final CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+    }
+
+    /**
+     * Computes student's degree progress and remaining deficits.
+     *
+     * @param request degree audit request containing program and transcript
+     * @return audit result containing completed/remaining requirements
+     */
+    public DegreeAuditResult auditDegreeProgress(
+            final DegreeAuditRequest request
+    ) {
+        if (request == null || request.getProgramId() == null) {
+            throw new IllegalArgumentException("Program ID cannot be null.");
+        }
+
+        final Optional<DegreeProgram> optProgram =
+                courseRepository.findProgramById(
+                        request.getProgramId(), request.getCatalogYear());
+        if (optProgram.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Degree program not found: " + request.getProgramId());
+        }
+
+        final DegreeProgram program = optProgram.get();
+        final Set<String> completedIds = new HashSet<>();
+        int creditsEarned = 0;
+
+        for (final CompletedCourse completed : request.getCompletedCourses()) {
+            if (completed.getCourseId() == null) {
+                continue;
+            }
+            final String normId = completed.getCourseId().trim().toUpperCase();
+            if (isPassingGrade(completed.getGrade())) {
+                completedIds.add(normId);
+                int cred = completed.getCredits();
+                if (cred <= 0) {
+                    final Optional<Course> c =
+                            courseRepository.findCourseById(normId);
+                    cred = c.map(Course::getCredits).orElse(3);
+                }
+                creditsEarned += cred;
+            }
+        }
+
+        final List<String> completedReqs = new ArrayList<>();
+        final List<String> remainingReqs = new ArrayList<>();
+        final List<String> coursesNeeded = new ArrayList<>();
+
+        for (final String reqCourseId : program.getRequiredCourseIds()) {
+            final String normReq = reqCourseId.trim().toUpperCase();
+            if (completedIds.contains(normReq)) {
+                completedReqs.add(normReq);
+            } else {
+                remainingReqs.add(normReq);
+                coursesNeeded.add(normReq);
+            }
+        }
+
+        final boolean allCoreMet = remainingReqs.isEmpty();
+        final boolean creditsMet =
+                creditsEarned >= program.getTotalCreditsRequired();
+        final boolean completed = allCoreMet && creditsMet;
+
+        if (!creditsMet && allCoreMet) {
+            final int deficit = program.getTotalCreditsRequired()
+                    - creditsEarned;
+            coursesNeeded.add("Elective credits deficit: " + deficit);
+        }
+
+        return new DegreeAuditResult(
+                program.getProgramId(),
+                creditsEarned,
+                program.getTotalCreditsRequired(),
+                completed,
+                completedReqs,
+                remainingReqs,
+                coursesNeeded
+        );
+    }
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Grade parsing and pass/fail evaluation
+    // -------------------------------------------------------------------------
+    private boolean isPassingGrade(final String grade) {
+        if (grade == null || grade.isBlank()) {
+            return false;
+        }
+        final String g = grade.trim().toUpperCase();
+        return !g.startsWith("F") && !g.equals("W") && !g.equals("INC");
+    }
+}

@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DegreeProgram.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">dina</a> &gt; <a href="index.source.html" class="el_package">com.dina.model</a> &gt; <span class="el_source">DegreeProgram.java</span></div><h1>DegreeProgram.java</h1><pre class="source lang-java linenums">package com.dina.model;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Represents academic degree requirements for a specific degree track.
+ */
+public final class DegreeProgram {
+
+    /** Identifier for the degree program (e.g., CS_BS). */
+    private String programId;
+
+    /** Full title of the degree program. */
+    private String programName;
+
+    /** Applicable catalog year. */
+    private int catalogYear;
+
+    /** Total credits required to complete the degree. */
+    private int totalCreditsRequired;
+
+    /** List of mandatory core course IDs. */
+<span class="pc" id="L26">    private List&lt;String&gt; requiredCourseIds = new ArrayList&lt;&gt;();</span>
+
+    /** List of allowable elective course IDs. */
+<span class="pc" id="L29">    private List&lt;String&gt; electiveCourseIds = new ArrayList&lt;&gt;();</span>
+
+    /** Minimum passing grade accepted for degree credit. */
+    private String minPassingGrade;
+
+    /** Default constructor for deserialization. */
+<span class="nc" id="L35">    public DegreeProgram() {</span>
+<span class="nc" id="L36">    }</span>
+
+    /**
+     * Constructs a DegreeProgram.
+     *
+     * @param programId degree identifier
+     * @param programName full degree name
+     * @param catalogYear catalog year
+     * @param totalCreditsRequired required credits
+     * @param requiredCourseIds mandatory course IDs
+     * @param electiveCourseIds elective course IDs
+     * @param minPassingGrade minimum passing grade
+     */
+    public DegreeProgram(
+            final String programId,
+            final String programName,
+            final int catalogYear,
+            final int totalCreditsRequired,
+            final List&lt;String&gt; requiredCourseIds,
+            final List&lt;String&gt; electiveCourseIds,
+            final String minPassingGrade
+<span class="fc" id="L57">    ) {</span>
+<span class="fc" id="L58">        this.programId = programId;</span>
+<span class="fc" id="L59">        this.programName = programName;</span>
+<span class="fc" id="L60">        this.catalogYear = catalogYear;</span>
+<span class="fc" id="L61">        this.totalCreditsRequired = totalCreditsRequired;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (requiredCourseIds != null) {</span>
+<span class="fc" id="L63">            this.requiredCourseIds = new ArrayList&lt;&gt;(requiredCourseIds);</span>
+        }
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        if (electiveCourseIds != null) {</span>
+<span class="fc" id="L66">            this.electiveCourseIds = new ArrayList&lt;&gt;(electiveCourseIds);</span>
+        }
+<span class="fc" id="L68">        this.minPassingGrade = minPassingGrade;</span>
+<span class="fc" id="L69">    }</span>
+
+    /**
+     * Gets program ID.
+     *
+     * @return program ID
+     */
+    public String getProgramId() {
+<span class="fc" id="L77">        return programId;</span>
+    }
+
+    /**
+     * Sets program ID.
+     *
+     * @param programId program ID
+     */
+    public void setProgramId(final String programId) {
+<span class="fc" id="L86">        this.programId = programId;</span>
+<span class="fc" id="L87">    }</span>
+
+    /**
+     * Gets program name.
+     *
+     * @return program name
+     */
+    public String getProgramName() {
+<span class="fc" id="L95">        return programName;</span>
+    }
+
+    /**
+     * Sets program name.
+     *
+     * @param programName program name
+     */
+    public void setProgramName(final String programName) {
+<span class="fc" id="L104">        this.programName = programName;</span>
+<span class="fc" id="L105">    }</span>
+
+    /**
+     * Gets catalog year.
+     *
+     * @return catalog year
+     */
+    public int getCatalogYear() {
+<span class="fc" id="L113">        return catalogYear;</span>
+    }
+
+    /**
+     * Sets catalog year.
+     *
+     * @param catalogYear catalog year
+     */
+    public void setCatalogYear(final int catalogYear) {
+<span class="fc" id="L122">        this.catalogYear = catalogYear;</span>
+<span class="fc" id="L123">    }</span>
+
+    /**
+     * Gets total credits required.
+     *
+     * @return total credits required
+     */
+    public int getTotalCreditsRequired() {
+<span class="fc" id="L131">        return totalCreditsRequired;</span>
+    }
+
+    /**
+     * Sets total credits required.
+     *
+     * @param totalCreditsRequired total credits
+     */
+    public void setTotalCreditsRequired(final int totalCreditsRequired) {
+<span class="fc" id="L140">        this.totalCreditsRequired = totalCreditsRequired;</span>
+<span class="fc" id="L141">    }</span>
+
+    /**
+     * Gets required course IDs.
+     *
+     * @return list of required course IDs
+     */
+    public List&lt;String&gt; getRequiredCourseIds() {
+<span class="fc" id="L149">        return Collections.unmodifiableList(requiredCourseIds);</span>
+    }
+
+    /**
+     * Sets required course IDs.
+     *
+     * @param requiredCourseIds required course IDs
+     */
+    public void setRequiredCourseIds(final List&lt;String&gt; requiredCourseIds) {
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">        this.requiredCourseIds = requiredCourseIds == null</span>
+<span class="pc" id="L159">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(requiredCourseIds);</span>
+<span class="fc" id="L160">    }</span>
+
+    /**
+     * Gets elective course IDs.
+     *
+     * @return list of elective course IDs
+     */
+    public List&lt;String&gt; getElectiveCourseIds() {
+<span class="fc" id="L168">        return Collections.unmodifiableList(electiveCourseIds);</span>
+    }
+
+    /**
+     * Sets elective course IDs.
+     *
+     * @param electiveCourseIds elective course IDs
+     */
+    public void setElectiveCourseIds(final List&lt;String&gt; electiveCourseIds) {
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        this.electiveCourseIds = electiveCourseIds == null</span>
+<span class="pc" id="L178">                ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(electiveCourseIds);</span>
+<span class="fc" id="L179">    }</span>
+
+    /**
+     * Gets minimum passing grade.
+     *
+     * @return minimum passing grade
+     */
+    public String getMinPassingGrade() {
+<span class="fc" id="L187">        return minPassingGrade;</span>
+    }
+
+    /**
+     * Sets minimum passing grade.
+     *
+     * @param minPassingGrade minimum passing grade
+     */
+    public void setMinPassingGrade(final String minPassingGrade) {
+<span class="fc" id="L196">        this.minPassingGrade = minPassingGrade;</span>
+<span class="fc" id="L197">    }</span>
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Boilerplate equals and hashCode
+    // -------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(final Object obj) {
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        if (this == obj) {</span>
+<span class="fc" id="L206">            return true;</span>
+        }
+<span class="fc bfc" id="L208" title="All 4 branches covered.">        if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="fc" id="L209">            return false;</span>
+        }
+<span class="fc" id="L211">        final DegreeProgram that = (DegreeProgram) obj;</span>
+<span class="pc bpc" id="L212" title="1 of 4 branches missed.">        return Objects.equals(programId, that.programId)</span>
+                &amp;&amp; catalogYear == that.catalogYear;
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L218">        return Objects.hash(programId, catalogYear);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
