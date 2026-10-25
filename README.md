@@ -49,7 +49,8 @@ Searches the course catalog and returns courses matching specified query paramet
   - `keyword` *(string, optional)*: Case-insensitive search matching course ID, title, or description.
 - **Side Effects:** None (idempotent query).
 - **Status Codes:**
-  - `200 OK`: Successful query; returns array of matching `Course` objects.
+  - `200 OK`: Successful query; returns array of matching `Course` objects, sorted by `courseId`.
+  - `400 BAD REQUEST`: `level` or `credits` is not a positive integer.
 - **Sample Request:**
   ```http
   GET /courses?department=COMS&level=4000&keyword=software HTTP/1.1

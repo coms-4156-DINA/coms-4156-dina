@@ -162,9 +162,11 @@ public final class AcademicDataStore implements CourseRepository {
 
     @Override
     public Optional<Course> findCourseById(final String courseId) {
+        
         if (courseId == null) {
             return Optional.empty();
         }
+
         return Optional.ofNullable(courses.get(courseId.toUpperCase()));
     }
 

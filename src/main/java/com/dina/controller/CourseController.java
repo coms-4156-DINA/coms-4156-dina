@@ -39,7 +39,8 @@ public final class CourseController {
      * @param credits optional credits filter
      * @param term optional term filter
      * @param keyword optional keyword search
-     * @return list of matching courses
+     * @return list of matching courses, or 400 BAD REQUEST
+     * 
      */
     @GetMapping
     public ResponseEntity<List<Course>> getCourses(
@@ -49,9 +50,16 @@ public final class CourseController {
             @RequestParam(required = false) final String term,
             @RequestParam(required = false) final String keyword
     ) {
-        final List<Course> matches = courseService.searchCourses(
-                department, level, credits, term, keyword);
-        return ResponseEntity.ok(matches);
+
+        try {
+            final List<Course> matches = courseService.searchCourses(
+                    department, level, credits, term, keyword);
+            return ResponseEntity.ok(matches);
+
+        } catch (final IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
     }
 
     /**
@@ -62,10 +70,12 @@ public final class CourseController {
      */
     @GetMapping("/{courseId}")
     public ResponseEntity<Course> getCourseById(
-            @PathVariable final String courseId
+        @PathVariable final String courseId
     ) {
+        
         final Optional<Course> optCourse =
                 courseService.getCourseById(courseId);
+                
         return optCourse.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(
                         HttpStatus.NOT_FOUND).build());
