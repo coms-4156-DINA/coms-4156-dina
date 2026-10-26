@@ -43,6 +43,7 @@ public final class DegreeAuditController {
      * @param programId target degree program ID
      * @param catalogYear optional catalog year
      * @param completedCourses completed course IDs
+     * @param inProgressCourses in-progress course IDs
      * @return degree audit result
      */
     @GetMapping
@@ -51,10 +52,13 @@ public final class DegreeAuditController {
             @RequestParam(required = false) final String programId,
             @RequestParam(required = false) final Integer catalogYear,
             @RequestParam(required = false)
-            final List<String> completedCourses
+            final List<String> completedCourses,
+            @RequestParam(required = false)
+            final List<String> inProgressCourses
     ) {
         final DegreeAuditRequest request = resolveRequest(
-                body, programId, catalogYear, completedCourses);
+                body, programId, catalogYear, completedCourses,
+                inProgressCourses);
         if (request.getProgramId() == null
                 || request.getProgramId().isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -97,7 +101,8 @@ public final class DegreeAuditController {
             final DegreeAuditRequest body,
             final String programId,
             final Integer catalogYear,
-            final List<String> completedCourseIds
+            final List<String> completedCourseIds,
+            final List<String> inProgressCourseIds
     ) {
         if (body != null && body.getProgramId() != null) {
             return body;
@@ -109,7 +114,9 @@ public final class DegreeAuditController {
                 completed.add(new CompletedCourse(cid, "PAST", "A", 3));
             }
         }
+        final List<String> inProgress = inProgressCourseIds != null
+                ? inProgressCourseIds : new ArrayList<>();
         return new DegreeAuditRequest(
-                programId, catalogYear, completed, new ArrayList<>());
+                programId, catalogYear, completed, inProgress);
     }
 }

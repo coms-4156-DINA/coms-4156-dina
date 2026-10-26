@@ -74,10 +74,18 @@ public final class DegreeAuditService {
                             courseRepository.findCourseById(normId);
                     cred = c.map(Course::getCredits).orElse(3);
                 }
-                final Integer previousCredits = creditsByCourseId.put(normId, cred);
+                final Integer previousCredits =
+                    creditsByCourseId.put(normId, cred);
                 creditsEarned += cred - (previousCredits == null
                         ? 0 : previousCredits);
                 completedIds.add(normId);
+            }
+        }
+
+        final Set<String> inProgressIds = new HashSet<>();
+        for (final String inProgress : request.getInProgressCourses()) {
+            if (inProgress != null) {
+                inProgressIds.add(inProgress.trim().toUpperCase());
             }
         }
 
@@ -89,6 +97,8 @@ public final class DegreeAuditService {
             final String normReq = reqCourseId.trim().toUpperCase();
             if (completedIds.contains(normReq)) {
                 completedReqs.add(normReq);
+            } else if (inProgressIds.contains(normReq)) {
+                remainingReqs.add(normReq + " (IN PROGRESS)");
             } else {
                 remainingReqs.add(normReq);
                 coursesNeeded.add(normReq);
