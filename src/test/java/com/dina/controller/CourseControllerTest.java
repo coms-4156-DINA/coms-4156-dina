@@ -1,5 +1,6 @@
 package com.dina.controller;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -88,4 +89,55 @@ public final class CourseControllerTest {
         mockMvc.perform(get("/courses/NON_EXISTENT"))
                 .andExpect(status().isNotFound());
     }
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude Opus 5.5] test cases for CourseController endpoints
+    // -------------------------------------------------------------------------
+
+    /**
+     * Tests GET /courses passes filters through to the service.
+     *
+     * @throws Exception if request fails
+     */
+    @Test
+    public void testGetCoursesWithFilters() throws Exception {
+        mockMvc.perform(get("/courses")
+                        .param("department", "COMS")
+                        .param("level", "4000")
+                        .param("credits", "3")
+                        .param("term", "FALL")
+                        .param("keyword", "software"))
+                .andExpect(status().isOk());
+
+        verify(courseService).searchCourses(
+                "COMS", 4000, 3, "FALL", "software");
+    }
+
+    /**
+     * Tests GET /courses returns 400 when the service rejects a filter.
+     *
+     * @throws Exception if request fails
+     */
+    @Test
+    public void testGetCoursesInvalidFilter() throws Exception {
+        when(courseService.searchCourses(
+                null, null, -1, null, null
+        )).thenThrow(new IllegalArgumentException("bad credits"));
+
+        mockMvc.perform(get("/courses").param("credits", "-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    /**
+     * Tests GET /courses returns 400 for a non-numeric level.
+     *
+     * @throws Exception if request fails
+     */
+    @Test
+    public void testGetCoursesNonNumericLevel() throws Exception {
+        mockMvc.perform(get("/courses").param("level", "abc"))
+                .andExpect(status().isBadRequest());
+    }
+
 }
+
