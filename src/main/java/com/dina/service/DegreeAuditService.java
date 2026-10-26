@@ -7,8 +7,10 @@ import com.dina.model.DegreeAuditResult;
 import com.dina.model.DegreeProgram;
 import com.dina.repository.CourseRepository;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,7 @@ public final class DegreeAuditService {
 
         final DegreeProgram program = optProgram.get();
         final Set<String> completedIds = new HashSet<>();
+        final Map<String, Integer> creditsByCourseId = new HashMap<>();
         int creditsEarned = 0;
 
         for (final CompletedCourse completed : request.getCompletedCourses()) {
@@ -61,15 +64,20 @@ public final class DegreeAuditService {
                 continue;
             }
             final String normId = completed.getCourseId().trim().toUpperCase();
-            if (meetsMinimumGrade(completed.getGrade(), program.getMinPassingGrade())) {
-                completedIds.add(normId);
+
+            // we keep the latest passing grade of a course
+            if (meetsMinimumGrade(
+                    completed.getGrade(), program.getMinPassingGrade())) {
                 int cred = completed.getCredits();
                 if (cred <= 0) {
                     final Optional<Course> c =
                             courseRepository.findCourseById(normId);
                     cred = c.map(Course::getCredits).orElse(3);
                 }
-                creditsEarned += cred;
+                final Integer previousCredits = creditsByCourseId.put(normId, cred);
+                creditsEarned += cred - (previousCredits == null
+                        ? 0 : previousCredits);
+                completedIds.add(normId);
             }
         }
 
