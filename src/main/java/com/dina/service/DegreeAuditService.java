@@ -95,6 +95,16 @@ public final class DegreeAuditService {
             }
         }
 
+        final List<String> remainingElectives = new ArrayList<>();
+        for (final String electiveId : program.getElectiveCourseIds()) {
+            final String normElective = electiveId.trim().toUpperCase();
+            if (completedIds.contains(normElective)) {
+                completedReqs.add("ELECTIVE: " + normElective);
+            } else {
+                remainingElectives.add(normElective);
+            }
+        }
+
         final boolean allCoreMet = remainingReqs.isEmpty();
         final boolean creditsMet =
                 creditsEarned >= program.getTotalCreditsRequired();
@@ -104,6 +114,9 @@ public final class DegreeAuditService {
             final int deficit = program.getTotalCreditsRequired()
                     - creditsEarned;
             coursesNeeded.add("Elective credits deficit: " + deficit);
+            for (final String electiveId : remainingElectives) {
+                coursesNeeded.add("Elective option: " + electiveId);
+            }
         }
 
         return new DegreeAuditResult(
