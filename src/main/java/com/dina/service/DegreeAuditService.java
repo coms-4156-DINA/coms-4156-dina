@@ -7,8 +7,10 @@ import com.dina.model.DegreeAuditResult;
 import com.dina.model.DegreeProgram;
 import com.dina.repository.CourseRepository;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,7 @@ public final class DegreeAuditService {
 
         final DegreeProgram program = optProgram.get();
         final Set<String> completedIds = new HashSet<>();
+        final Map<String, Integer> creditsByCourseId = new HashMap<>();
         int creditsEarned = 0;
 
         for (final CompletedCourse completed : request.getCompletedCourses()) {
@@ -61,15 +64,28 @@ public final class DegreeAuditService {
                 continue;
             }
             final String normId = completed.getCourseId().trim().toUpperCase();
-            if (isPassingGrade(completed.getGrade())) {
-                completedIds.add(normId);
+
+            // we keep the latest passing grade of a course
+            if (meetsMinimumGrade(
+                    completed.getGrade(), program.getMinPassingGrade())) {
                 int cred = completed.getCredits();
                 if (cred <= 0) {
                     final Optional<Course> c =
                             courseRepository.findCourseById(normId);
                     cred = c.map(Course::getCredits).orElse(3);
                 }
-                creditsEarned += cred;
+                final Integer previousCredits =
+                    creditsByCourseId.put(normId, cred);
+                creditsEarned += cred - (previousCredits == null
+                        ? 0 : previousCredits);
+                completedIds.add(normId);
+            }
+        }
+
+        final Set<String> inProgressIds = new HashSet<>();
+        for (final String inProgress : request.getInProgressCourses()) {
+            if (inProgress != null) {
+                inProgressIds.add(inProgress.trim().toUpperCase());
             }
         }
 
@@ -81,9 +97,21 @@ public final class DegreeAuditService {
             final String normReq = reqCourseId.trim().toUpperCase();
             if (completedIds.contains(normReq)) {
                 completedReqs.add(normReq);
+            } else if (inProgressIds.contains(normReq)) {
+                remainingReqs.add(normReq + " (IN PROGRESS)");
             } else {
                 remainingReqs.add(normReq);
                 coursesNeeded.add(normReq);
+            }
+        }
+
+        final List<String> remainingElectives = new ArrayList<>();
+        for (final String electiveId : program.getElectiveCourseIds()) {
+            final String normElective = electiveId.trim().toUpperCase();
+            if (completedIds.contains(normElective)) {
+                completedReqs.add("ELECTIVE: " + normElective);
+            } else {
+                remainingElectives.add(normElective);
             }
         }
 
@@ -96,6 +124,9 @@ public final class DegreeAuditService {
             final int deficit = program.getTotalCreditsRequired()
                     - creditsEarned;
             coursesNeeded.add("Elective credits deficit: " + deficit);
+            for (final String electiveId : remainingElectives) {
+                coursesNeeded.add("Elective option: " + electiveId);
+            }
         }
 
         return new DegreeAuditResult(
@@ -110,13 +141,50 @@ public final class DegreeAuditService {
     }
 
     // -------------------------------------------------------------------------
-    // [AI-Assisted: Claude 5 Sonnet] Grade parsing and pass/fail evaluation
+    // [AI-Assisted: Claude 5 Sonnet] Letter grade to GPA points mapping
+    // I fixed the switch statements
     // -------------------------------------------------------------------------
-    private boolean isPassingGrade(final String grade) {
+    private Double letterGradeToPoints(final String letterGrade) {
+        if (letterGrade == null) {
+            return null;
+        }
+        return switch (letterGrade.trim().toUpperCase()) {
+            case "A+", "A" -> 4.0;
+            case "A-" -> 3.7;
+            case "B+" -> 3.3;
+            case "B" -> 3.0;
+            case "B-" -> 2.7;
+            case "C+" -> 2.3;
+            case "C" -> 2.0;
+            case "C-" -> 1.7;
+            case "D+" -> 1.3;
+            case "D" -> 1.0;
+            case "D-" -> 0.7;
+            case "F" -> 0.0;
+            default -> null;
+        };
+    }
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Grade vs. program minimum comparison
+    // -------------------------------------------------------------------------
+    private boolean meetsMinimumGrade(
+            final String grade, final String minGrade) {
         if (grade == null || grade.isBlank()) {
             return false;
         }
         final String g = grade.trim().toUpperCase();
-        return !g.startsWith("F") && !g.equals("W") && !g.equals("INC");
+        if (g.startsWith("F") || g.equals("W") || g.equals("INC")) {
+            return false;
+        }
+        final Double minPoints = letterGradeToPoints(minGrade);
+        if (minPoints == null) {
+            return true;
+        }
+        final Double points = letterGradeToPoints(g);
+        if (points == null) {
+            return false;
+        }
+        return points >= minPoints;
     }
 }
