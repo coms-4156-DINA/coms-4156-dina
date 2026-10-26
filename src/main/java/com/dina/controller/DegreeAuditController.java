@@ -56,6 +56,15 @@ public final class DegreeAuditController {
             @RequestParam(required = false)
             final List<String> inProgressCourses
     ) {
+        // A body that was sent but has no usable programId is a
+        // malformed request, not a cue to silently fall back to
+        // query params.
+        // This if statement was added by ai sonnet 5
+        if (body != null
+                && (body.getProgramId() == null
+                        || body.getProgramId().isBlank())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         final DegreeAuditRequest request = resolveRequest(
                 body, programId, catalogYear, completedCourses,
                 inProgressCourses);
