@@ -177,13 +177,13 @@ public final class DegreeAuditService {
         if (g.startsWith("F") || g.equals("W") || g.equals("INC")) {
             return false;
         }
-        final Double points = letterGradeToPoints(g);
-        if (points == null) {
-            return true;
-        }
         final Double minPoints = letterGradeToPoints(minGrade);
         if (minPoints == null) {
             return true;
+        }
+        final Double points = letterGradeToPoints(g);
+        if (points == null) {
+            return false;
         }
         return points >= minPoints;
     }
