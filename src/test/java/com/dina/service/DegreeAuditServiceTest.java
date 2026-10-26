@@ -182,10 +182,11 @@ public final class DegreeAuditServiceTest {
     // -------------------------------------------------------------------------
 
     /**
-     * Tests a non-letter pass grade always meets the program minimum.
+     * Tests a non-letter pass grade does not satisfy a real program
+     * minimum, since it can't be numerically verified against one.
      */
     @Test
-    public void testAuditNonLetterGradeAlwaysPasses() {
+    public void testAuditNonLetterGradeFailsWithMinimum() {
         final DegreeProgram prog = new DegreeProgram(
                 "CS_MS", "MS in CS", 2026, 6,
                 Arrays.asList("COMSW4156", "COMSW4118"),
@@ -205,8 +206,8 @@ public final class DegreeAuditServiceTest {
 
         final DegreeAuditResult result = service.auditDegreeProgress(req);
 
-        assertTrue(result.isDegreeCompleted());
-        assertEquals(6, result.getCreditsEarned());
+        assertFalse(result.isDegreeCompleted());
+        assertEquals(3, result.getCreditsEarned());
     }
 
     // -------------------------------------------------------------------------
@@ -375,5 +376,65 @@ public final class DegreeAuditServiceTest {
         assertTrue(result.getRemainingRequirements()
                 .contains("COMSW4118 (IN PROGRESS)"));
         assertFalse(result.getCoursesStillNeeded().contains("COMSW4118"));
+    }
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude 5 Sonnet] Garbage-grade test fixture
+    // -------------------------------------------------------------------------
+
+    /**
+     * Tests an unrecognized grade does not meet a real program minimum.
+     */
+    @Test
+    public void testAuditGarbageGradeFailsWithMinimum() {
+        final DegreeProgram prog = new DegreeProgram(
+                "CS_MS", "MS in CS", 2026, 6,
+                Arrays.asList("COMSW4156", "COMSW4118"),
+                Collections.emptyList(), "B-"
+        );
+        when(courseRepository.findProgramById("CS_MS", null)).thenReturn(
+                Optional.of(prog));
+
+        final DegreeAuditRequest req = new DegreeAuditRequest(
+                "CS_MS", null,
+                Arrays.asList(
+                        new CompletedCourse("COMSW4156", "FALL2025", "Z", 3),
+                        new CompletedCourse("COMSW4118", "SPRING2026", "A", 3)
+                ),
+                Collections.emptyList()
+        );
+
+        final DegreeAuditResult result = service.auditDegreeProgress(req);
+
+        assertFalse(result.isDegreeCompleted());
+        assertEquals(3, result.getCreditsEarned());
+        assertTrue(result.getRemainingRequirements().contains("COMSW4156"));
+    }
+
+    /**
+     * Tests an unrecognized grade still counts when the program has no
+     * configured minimum passing grade to verify it against.
+     */
+    @Test
+    public void testAuditGarbageGradePassesWithoutMinimum() {
+        final DegreeProgram prog = new DegreeProgram(
+                "CS_NOMIN", "No Minimum Program", 2026, 3,
+                Collections.singletonList("COMSW4156"),
+                Collections.emptyList(), null
+        );
+        when(courseRepository.findProgramById("CS_NOMIN", null)).thenReturn(
+                Optional.of(prog));
+
+        final DegreeAuditRequest req = new DegreeAuditRequest(
+                "CS_NOMIN", null,
+                Collections.singletonList(
+                        new CompletedCourse("COMSW4156", "FALL2025", "Z", 3)),
+                Collections.emptyList()
+        );
+
+        final DegreeAuditResult result = service.auditDegreeProgress(req);
+
+        assertTrue(result.isDegreeCompleted());
+        assertEquals(3, result.getCreditsEarned());
     }
 }
