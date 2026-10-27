@@ -57,6 +57,8 @@ public final class PlanValidationService {
         final Set<String> seenIds = new HashSet<>();
         int totalCredits = 0;
 
+        // completed courses and currently enrolled courses are combined here
+        // TODO make sure failed courses are not part of completedCourseIDs
         final Set<String> completedCourseIds = extractCompletedCourseIds(
                 request.getCompletedCourses(), request.getCurrentEnrollment());
 
@@ -106,6 +108,7 @@ public final class PlanValidationService {
         }
 
         // Credit limit check
+        // TODO Check for minimum credit (full time/part time)
         if (totalCredits > MAX_CREDITS_PER_SEMESTER) {
             issues.add(new ValidationIssue(
                     "CREDIT_LIMIT_EXCEEDED", null, null,
@@ -153,6 +156,8 @@ public final class PlanValidationService {
         }
         final String upperTerm = targetTerm.toUpperCase();
         boolean offered = false;
+        // TODO determine whether to check the year as well
+        // Should we allow planning of past semesters?
         for (final String sem : course.getSemestersOffered()) {
             if (upperTerm.contains(sem.toUpperCase())) {
                 offered = true;
@@ -208,6 +213,8 @@ public final class PlanValidationService {
     }
 
     private boolean hasTimeConflict(final Course c1, final Course c2) {
+        // TODO right now this compares literal strings
+        // Need to split into day of the week and time to make comparison
         for (final String t1 : c1.getMeetingTimes()) {
             for (final String t2 : c2.getMeetingTimes()) {
                 if (t1 != null && t1.equalsIgnoreCase(t2)) {
@@ -218,3 +225,5 @@ public final class PlanValidationService {
         return false;
     }
 }
+
+// TODO MUTUALLY_EXCLUSIVE (Courses that can't be taken together)
