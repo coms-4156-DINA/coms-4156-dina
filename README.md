@@ -357,3 +357,17 @@ In accordance with course guidelines for team projects, team DINA utilized "huma
 - **Code Marking:** Rather than ambiguous blanket file markings, AI-assisted code is explicitly demarcated at the granular method and block level using clear banner comments (e.g., `// [AI-Assisted: Claude 5 Sonnet] <Task>`), cleanly distinguishing human-engineered architecture from AI-assisted boilerplate and helpers. A comprehensive mapping is documented in [`docs/ai_usage_log.md`](docs/ai_usage_log.md).
 - **Token Consumption Metrics (for University Data Collection):**
   - **Total Tokens Used:** **~165,000 tokens** across all tools (Scaffolding: 28k, Domain models: 35k, Services: 38k, Unit & Mock testing: 44k, API tests & docs: 20k). See breakdown in [`docs/ai_usage_log.md`](docs/ai_usage_log.md).
+
+## 10. TODOs
+- Migrate data to PostgreSQL. Can use Docker for local dev. Some of the tables can be:
+  - University: ID, name, location (All other tables will have a university_id column)
+  - Courses: ID, title, dept, credits, passing grades
+  - Prereqs: course - course relationship
+  - Offerings: course, semester, academic year
+  - Degree: program ID, name, catalog year, total credits
+  - Degree reqs: required courses, electives, credit rules
+  - Req relationship: groups (i.e. breadth/depth), prereq/coreq
+- Endpoints:
+  - POST /plans/generate
+  - GET /plans/compare
+  - GET /programs/{programID}/requirements
