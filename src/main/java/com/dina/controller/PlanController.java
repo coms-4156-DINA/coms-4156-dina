@@ -1,11 +1,8 @@
 package com.dina.controller;
 
-import com.dina.model.CompletedCourse;
 import com.dina.model.ScheduleValidationRequest;
 import com.dina.model.ScheduleValidationResult;
 import com.dina.service.PlanValidationService;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,31 +45,5 @@ public final class PlanController {
         final ScheduleValidationResult result =
                 planValidationService.validateSchedule(request);
         return ResponseEntity.ok(result);
-    }
-
-    // -------------------------------------------------------------------------
-    // [AI-Assisted: Claude 5 Sonnet] Request parameter resolution helper
-    // -------------------------------------------------------------------------
-    private ScheduleValidationRequest resolveRequest(
-            final ScheduleValidationRequest body,
-            final List<String> courseIds,
-            final String targetTerm,
-            final List<String> completedCourseIds
-    ) {
-        if (body != null && body.getCourseIds() != null
-                && !body.getCourseIds().isEmpty()) {
-            return body;
-        }
-
-        final List<String> courses = courseIds != null
-                ? courseIds : new ArrayList<>();
-        final List<CompletedCourse> completed = new ArrayList<>();
-        if (completedCourseIds != null) {
-            for (final String cid : completedCourseIds) {
-                completed.add(new CompletedCourse(cid, "PAST", "A", 3));
-            }
-        }
-        return new ScheduleValidationRequest(
-                courses, completed, new ArrayList<>(), targetTerm);
     }
 }
