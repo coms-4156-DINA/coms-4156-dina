@@ -212,6 +212,36 @@ public final class PlanValidationServiceTest {
     }
 
     /**
+     * Tests time conflicts require a shared day and overlapping time.
+     */
+    @Test
+    public void testScheduleCollisionUsesDayAndTimeOverlap() {
+        final Course c1 = new Course(
+                "COURSE1", "COMS", 1, "First", 3,
+                Collections.emptyList()
+        ).withSemestersOffered(Collections.singletonList("FALL"))
+         .withMeetingTimes(Collections.singletonList("MW 10:10-11:25"));
+        final Course c2 = new Course(
+                "COURSE2", "COMS", 2, "Second", 3,
+                Collections.emptyList()
+        ).withSemestersOffered(Collections.singletonList("FALL"))
+         .withMeetingTimes(Collections.singletonList("TR 10:10-11:25"));
+        when(courseRepository.findCourseById("COURSE1")).thenReturn(
+                Optional.of(c1));
+        when(courseRepository.findCourseById("COURSE2")).thenReturn(
+                Optional.of(c2));
+
+        final ScheduleValidationResult result = service.validateSchedule(
+                new ScheduleValidationRequest(
+                        Arrays.asList("COURSE1", "COURSE2"),
+                        Collections.emptyList(),
+                        Collections.emptyList(),
+                        "FALL2026"));
+
+        assertTrue(result.isValid());
+    }
+
+    /**
      * Tests term unavailability flags TERM_UNAVAILABLE.
      */
     @Test
