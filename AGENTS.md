@@ -31,7 +31,7 @@ The service maintains its own persistent datastore containing:
 |---|-----------|---------------|
 | 1 | Search and retrieve courses | `GET /courses` |
 | 2 | Validate a proposed semester schedule | `GET /plans/validate` |
-| 3 | Calculate degree progress | `GET /degree-audit` |
+| 3 | Calculate degree progress | `POST /degree-audit` |
 | 4 | Generate a valid semester plan | `POST /plans/generate` |
 | 5 | Compare alternative plans | `GET /plans/compare` |
 | 6 | Retrieve degree requirements | `GET /programs/{programId}/requirements` |
@@ -48,7 +48,7 @@ The service maintains its own persistent datastore containing:
 - **Processing:** Checks prerequisite eligibility, credit limits, duplicate courses, known meeting-time conflicts, and any configured restrictions.
 - **Output:** A validity result, a list of detected conflicts or unmet prerequisites, and an explanation for each issue.
 
-### 3. Calculate Degree Progress — `GET /degree-audit`
+### 3. Calculate Degree Progress — `POST /degree-audit`
 
 - **Input:** A degree program ID and a student's completed, transferred, and (optionally) in-progress courses.
 - **Processing:** Maps completed courses to degree requirements, accounts for required credits and categories, and identifies outstanding requirements.

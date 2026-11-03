@@ -20,7 +20,7 @@ The service maintains its own persistent, thread-safe academic datastore contain
 | **Dwarakesh Baraneetharan** | `db3881` | Project scaffold & architecture, Gradle build tooling, Checkstyle, JaCoCo, SpotBugs, CI workflow, Postman test suite, documentation, and integration |
 | **Ismael Hernandez** | `ih2427` | Operation 1: Search and retrieve courses (`GET /courses`, `GET /courses/{courseId}`) |
 | **Anh Nguyen** | `ahn2130` | Operation 2: Validate proposed semester schedule (`POST /plans/validate`) |
-| **Nicolas Tabet** | `nt2773` | Operation 3: Calculate degree progress (`GET /degree-audit`, `POST /degree-audit`) |
+| **Nicolas Tabet** | `nt2773` | Operation 3: Calculate degree progress (`POST /degree-audit`) |
 
 ### Project Management Tracking
 All milestone tasks, issues, and member assignments are tracked via GitHub Issues in our repository:
@@ -173,16 +173,12 @@ Evaluates a candidate schedule against prerequisite requirements, duplicate cour
 
 ---
 
-### 3.4 Calculate Degree Progress — `GET /degree-audit` & `POST /degree-audit`
+### 3.4 Calculate Degree Progress — `POST /degree-audit`
 Maps a student's transcript against degree program requirements and calculates completed requirements, outstanding core requirements, and remaining credit deficits.
 
-- **HTTP Method:** `GET` or `POST`
+- **HTTP Method:** `POST`
 - **Path:** `/degree-audit`
-- **Parameters (GET Query):**
-  - `programId` *(string, required)*: Degree program identifier (e.g., `CS_BS`, `CS_MS`).
-  - `catalogYear` *(integer, optional)*: Catalog year (e.g., `2026`).
-  - `completedCourses` *(comma-separated strings, optional)*: Completed course codes.
-- **Request Body (JSON for POST or GET):**
+- **Request Body (JSON):**
   ```json
   {
     "programId": "CS_MS",
@@ -242,7 +238,7 @@ Retrieves the curricular rules, core requirements, and elective tracks for a deg
 
 ### Ordering Constraints
 1. **Catalog Awareness Before Schedule Validation:** Calling programs should query `GET /courses` to retrieve available courses and meeting times before submitting schedules to `POST /plans/validate`.
-2. **Requirements Ingestion Before Degree Auditing:** Calling programs should verify available degree requirements via `GET /programs/{programId}/requirements` prior to invoking `GET /degree-audit`.
+2. **Requirements Ingestion Before Degree Auditing:** Calling programs should verify available degree requirements via `GET /programs/{programId}/requirements` prior to invoking `POST /degree-audit`.
 3. **Stateless Idempotency:** None of the evaluation endpoints modify student datastores on the server; clients are expected to maintain transcript state between audits.
 
 ### Correct Usage Scenario (Happy Path)
@@ -262,7 +258,7 @@ Retrieves the curricular rules, core requirements, and elective tracks for a deg
    - **Invocation:** Client submits a schedule containing 7 three-credit courses (21 credits total).
    - **Why it fails:** Total credits exceed the maximum semester credit ceiling of 18. The service flags `CREDIT_LIMIT_EXCEEDED`.
 4. **Missing Program in Degree Audit:**
-   - **Invocation:** Client calls `GET /degree-audit?programId=ASTRONOMY_PHD`.
+   - **Invocation:** Client calls `POST /degree-audit` with `programId: "ASTRONOMY_PHD"`.
    - **Why it fails:** Program does not exist in datastore. Returns `404 NOT FOUND`.
 
 ---

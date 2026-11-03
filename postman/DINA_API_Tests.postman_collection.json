@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "dina-api-test-suite-v1",
 		"name": "DINA Academic Planning Service Test Suite",
-		"description": "Automated Postman test suite exercising MVP endpoints for DINA: GET /courses, GET /plans/validate, POST /plans/validate, GET /degree-audit, POST /degree-audit, and GET /programs/{id}/requirements.",
+		"description": "Automated Postman test suite exercising MVP endpoints for DINA: GET /courses, GET /plans/validate, POST /plans/validate, POST /degree-audit, and GET /programs/{id}/requirements.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
