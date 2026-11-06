@@ -19,8 +19,8 @@ The service maintains its own persistent, thread-safe academic datastore contain
 | :--- | :--- | :--- |
 | **Dwarakesh Baraneetharan** | `db3881` | Project scaffold & architecture, Gradle build tooling, Checkstyle, JaCoCo, SpotBugs, CI workflow, Postman test suite, documentation, and integration |
 | **Ismael Hernandez** | `ih2427` | Operation 1: Search and retrieve courses (`GET /courses`, `GET /courses/{courseId}`) |
-| **Anh Nguyen** | `ahn2130` | Operation 2: Validate proposed semester schedule (`GET /plans/validate`, `POST /plans/validate`) |
-| **Nicolas Tabet** | `nt2773` | Operation 3: Calculate degree progress (`GET /degree-audit`, `POST /degree-audit`) |
+| **Anh Nguyen** | `ahn2130` | Operation 2: Validate proposed semester schedule (`POST /plans/validate`) |
+| **Nicolas Tabet** | `nt2773` | Operation 3: Calculate degree progress (`POST /degree-audit`) |
 
 ### Project Management Tracking
 All milestone tasks, issues, and member assignments are tracked via GitHub Issues in our repository:
@@ -90,16 +90,12 @@ Retrieves detailed metadata for a specific course by its unique course ID.
 
 ---
 
-### 3.3 Validate Proposed Semester Schedule — `GET /plans/validate` & `POST /plans/validate`
-Evaluates a candidate schedule against prerequisite requirements, duplicate course restrictions, semester term offerings, schedule time collisions, and maximum credit limits (18 credits). Supports both GET (with query parameters or body) and POST (with JSON payload).
+### 3.3 Validate Proposed Semester Schedule — `POST /plans/validate`
+Evaluates a candidate schedule against prerequisite requirements, duplicate course restrictions, semester term offerings, schedule time collisions, and maximum credit limits (18 credits). Submit the schedule as a JSON payload.
 
-- **HTTP Method:** `GET` or `POST`
+- **HTTP Method:** `POST`
 - **Path:** `/plans/validate`
-- **Parameters (GET Query):**
-  - `courseIds` *(comma-separated strings)*: Proposed courses for the semester.
-  - `targetTerm` *(string)*: Target semester (e.g., `FALL2026`).
-  - `completedCourses` *(comma-separated strings, optional)*: Courses completed in prior terms.
-- **Request Body (JSON for POST or GET):**
+- **Request Body (JSON):**
   ```json
   {
     "courseIds": ["COMSW3134", "COMSW3203"],
@@ -114,6 +110,44 @@ Evaluates a candidate schedule against prerequisite requirements, duplicate cour
     "currentEnrollment": [],
     "targetTerm": "FALL2026"
   }
+  ```
+- **Example Requests:**
+  ```bash
+  # Valid schedule: COMSW1004 satisfies COMSW3134's prerequisite.
+  curl -X POST http://localhost:8080/plans/validate \
+    -H "Content-Type: application/json" \
+    -d '{
+      "courseIds": ["COMSW3134"],
+      "completedCourses": [
+        {"courseId": "COMSW1004", "term": "FALL2025",
+         "grade": "A", "credits": 3}
+      ],
+      "currentEnrollment": [],
+      "targetTerm": "FALL2026"
+    }'
+
+  # Unmet prerequisite: COMSW4118 requires COMSW3157 and COMSW3827.
+  curl -X POST http://localhost:8080/plans/validate \
+    -H "Content-Type: application/json" \
+    -d '{
+      "courseIds": ["COMSW4118"],
+      "completedCourses": [],
+      "currentEnrollment": [],
+      "targetTerm": "FALL2026"
+    }'
+
+  # Time conflict: both courses meet MW 10:10-11:25.
+  curl -X POST http://localhost:8080/plans/validate \
+    -H "Content-Type: application/json" \
+    -d '{
+      "courseIds": ["COMSW1004", "COMSW4156"],
+      "completedCourses": [
+        {"courseId": "COMSW3157", "term": "SPRING2026",
+         "grade": "A", "credits": 4}
+      ],
+      "currentEnrollment": [],
+      "targetTerm": "FALL2026"
+    }'
   ```
 - **Side Effects:** None (read-only evaluation).
 - **Status Codes:**
@@ -139,16 +173,12 @@ Evaluates a candidate schedule against prerequisite requirements, duplicate cour
 
 ---
 
-### 3.4 Calculate Degree Progress — `GET /degree-audit` & `POST /degree-audit`
+### 3.4 Calculate Degree Progress — `POST /degree-audit`
 Maps a student's transcript against degree program requirements and calculates completed requirements, outstanding core requirements, and remaining credit deficits.
 
-- **HTTP Method:** `GET` or `POST`
+- **HTTP Method:** `POST`
 - **Path:** `/degree-audit`
-- **Parameters (GET Query):**
-  - `programId` *(string, required)*: Degree program identifier (e.g., `CS_BS`, `CS_MS`).
-  - `catalogYear` *(integer, optional)*: Catalog year (e.g., `2026`).
-  - `completedCourses` *(comma-separated strings, optional)*: Completed course codes.
-- **Request Body (JSON for POST or GET):**
+- **Request Body (JSON):**
   ```json
   {
     "programId": "CS_MS",
@@ -207,8 +237,8 @@ Retrieves the curricular rules, core requirements, and elective tracks for a deg
 ## 4. Call-Order Constraints & Usage Scenarios
 
 ### Ordering Constraints
-1. **Catalog Awareness Before Schedule Validation:** Calling programs should query `GET /courses` to retrieve available courses and meeting times before submitting schedules to `GET /plans/validate`.
-2. **Requirements Ingestion Before Degree Auditing:** Calling programs should verify available degree requirements via `GET /programs/{programId}/requirements` prior to invoking `GET /degree-audit`.
+1. **Catalog Awareness Before Schedule Validation:** Calling programs should query `GET /courses` to retrieve available courses and meeting times before submitting schedules to `POST /plans/validate`.
+2. **Requirements Ingestion Before Degree Auditing:** Calling programs should verify available degree requirements via `GET /programs/{programId}/requirements` prior to invoking `POST /degree-audit`.
 3. **Stateless Idempotency:** None of the evaluation endpoints modify student datastores on the server; clients are expected to maintain transcript state between audits.
 
 ### Correct Usage Scenario (Happy Path)
@@ -228,7 +258,7 @@ Retrieves the curricular rules, core requirements, and elective tracks for a deg
    - **Invocation:** Client submits a schedule containing 7 three-credit courses (21 credits total).
    - **Why it fails:** Total credits exceed the maximum semester credit ceiling of 18. The service flags `CREDIT_LIMIT_EXCEEDED`.
 4. **Missing Program in Degree Audit:**
-   - **Invocation:** Client calls `GET /degree-audit?programId=ASTRONOMY_PHD`.
+   - **Invocation:** Client calls `POST /degree-audit` with `programId: "ASTRONOMY_PHD"`.
    - **Why it fails:** Program does not exist in datastore. Returns `404 NOT FOUND`.
 
 ---
@@ -328,3 +358,16 @@ In accordance with course guidelines for team projects, team DINA utilized "huma
 - **Token Consumption Metrics (for University Data Collection):**
   - **Total Tokens Used:** **~165,000 tokens** across all tools (Scaffolding: 28k, Domain models: 35k, Services: 38k, Unit & Mock testing: 44k, API tests & docs: 20k). See breakdown in [`docs/ai_usage_log.md`](docs/ai_usage_log.md).
 
+## 10. TODOs
+- Migrate data to PostgreSQL. Can use Docker for local dev. Some of the tables can be:
+  - University: ID, name, location (All other tables will have a university_id column)
+  - Courses: ID, title, dept, credits, passing grades
+  - Prereqs: course - course relationship
+  - Offerings: course, semester, academic year
+  - Degree: program ID, name, catalog year, total credits
+  - Degree reqs: required courses, electives, credit rules
+  - Req relationship: groups (i.e. breadth/depth), prereq/coreq
+- Endpoints:
+  - POST /plans/generate
+  - GET /plans/compare
+  - GET /programs/{programID}/requirements

@@ -135,10 +135,9 @@ Specific AI-assisted code blocks and helper methods are tagged directly in the s
 | **`PlanValidationService.java`**| Validation engine workflow, credit ceiling policy (18 cr), error reporting | Pairwise time conflict checking (`checkScheduleTimeConflicts`) |
 | **`DegreeAuditService.java`** | Audit mapping algorithm, credit deficit computation, core checks | Grade letter validation & pass/fail parsing (`isPassingGrade`) |
 | **`PlanController.java`** | REST endpoint mapping (`/plans/validate`), HTTP status handling | Request parameter resolution helper (`resolveRequest`) |
-| **`DegreeAuditController.java`** | REST endpoint mapping (`/degree-audit`), 400/404 exception handling | Request parameter resolution helper (`resolveRequest`) |
+| **`DegreeAuditController.java`** | REST endpoint mapping (`/degree-audit`), 400/404 exception handling | — |
 | **`ModelTest.java`** | Test coverage strategy, assertion verification | Exhaustive branch & accessor test assertions in `testCourseModel` |
 | **`CourseControllerTest.java`** | `GET /courses` and `GET /courses/{courseId}` test design (`testGetCourses`, `testGetCourseByIdFound`, `testGetCourseByIdNotFound`) | `[AI-Assisted: Claude Opus 5.5]` filter pass-through to the service (`testGetCoursesWithFilters`), 400 on a service-rejected filter (`testGetCoursesInvalidFilter`), and 400 on a non-numeric level (`testGetCoursesNonNumericLevel`) |
 | **`CourseServiceTest.java`** | Mockito repository test design, retrieval and search delegation cases (`testGetAllCourses`, `testGetCourseById*`, `testSearchCourses`) | `[AI-Assisted: Claude Opus 5.5]` result sorting by course ID (`testSearchCoursesSortedById`), rejection of non-positive level/credits with no repository calls (`testSearchCoursesInvalidLevel`, `testSearchCoursesInvalidCredits`), and an end-to-end search against the seeded `AcademicDataStore` catalog (`testSearchCoursesWithSeededCatalog`) |
 | **`PlanValidationServiceTest.java`**| Unit test suite design, prerequisite and duplicate edge cases | Schedule collision & credit limit test fixtures (`testScheduleCollision`) |
 | **`Postman Collection`** | API request specifications, test scenarios, parameter definitions | Automated JavaScript test assertions (`pm.test`) |
-

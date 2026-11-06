@@ -6,6 +6,7 @@ import com.dina.model.ScheduleValidationRequest;
 import com.dina.model.ScheduleValidationResult;
 import com.dina.model.ValidationIssue;
 import com.dina.repository.CourseRepository;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -213,11 +214,41 @@ public final class PlanValidationService {
     }
 
     private boolean hasTimeConflict(final Course c1, final Course c2) {
-        // TODO right now this compares literal strings
-        // Need to split into day of the week and time to make comparison
         for (final String t1 : c1.getMeetingTimes()) {
             for (final String t2 : c2.getMeetingTimes()) {
-                if (t1 != null && t1.equalsIgnoreCase(t2)) {
+                if (t1 == null || t2 == null) {
+                    continue;
+                }
+                final String[] first = t1.trim().split("\\s+", 2);
+                final String[] second = t2.trim().split("\\s+", 2);
+                if (first.length < 2 || second.length < 2) {
+                    continue;
+                }
+                boolean sameDay = false;
+                for (int i = 0; i < first[0].length(); i++) {
+                    if (second[0].indexOf(first[0].charAt(i)) >= 0) {
+                        sameDay = true;
+                        break;
+                    }
+                }
+                if (!sameDay) {
+                    continue;
+                }
+                final String[] firstTimes = first[1].split("-", 2);
+                final String[] secondTimes = second[1].split("-", 2);
+                if (firstTimes.length < 2 || secondTimes.length < 2) {
+                    continue;
+                }
+                final LocalTime firstStart =
+                        LocalTime.parse(firstTimes[0]);
+                final LocalTime firstEnd =
+                        LocalTime.parse(firstTimes[1]);
+                final LocalTime secondStart =
+                        LocalTime.parse(secondTimes[0]);
+                final LocalTime secondEnd =
+                        LocalTime.parse(secondTimes[1]);
+                if (firstStart.isBefore(secondEnd)
+                        && secondStart.isBefore(firstEnd)) {
                     return true;
                 }
             }
