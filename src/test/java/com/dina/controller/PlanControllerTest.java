@@ -11,12 +11,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dina.model.CompletedCourse;
+import com.dina.model.PlanComparisonResult;
+import com.dina.model.PlanEvaluation;
 import com.dina.model.ScheduleValidationRequest;
 import com.dina.model.ScheduleValidationResult;
 import com.dina.model.ValidationIssue;
+import com.dina.service.PlanComparisonService;
 import com.dina.service.PlanValidationService;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +42,10 @@ public final class PlanControllerTest {
     /** Mocked PlanValidationService. */
     @MockBean
     private PlanValidationService planValidationService;
+
+    /** Mocked PlanComparisonService. */
+    @MockBean
+    private PlanComparisonService planComparisonService;
 
     /**
      * Tests POST /plans/validate with JSON body.
@@ -173,5 +181,88 @@ public final class PlanControllerTest {
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(planValidationService);
+    }
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude Opus 5.5] POST /plans/compare tests
+    // -------------------------------------------------------------------------
+
+    /** A well-formed two-plan comparison payload. */
+    private static final String COMPARE_PAYLOAD = """
+            {
+                "programId": "CS_MS",
+                "catalogYear": 2026,
+                "completedCourses": [],
+                "plans": [
+                    {"planId": "A", "semesters": [
+                        {"term": "FALL2026", "courseIds": ["COMSW4156"]}
+                    ]},
+                    {"planId": "B", "semesters": []}
+                ],
+                "criteria": ["CONFLICTS"]
+            }
+            """;
+
+    /**
+     * Tests POST /plans/compare returns the service result.
+     *
+     * @throws Exception if request fails
+     */
+    @Test
+    public void testComparePost() throws Exception {
+        final PlanEvaluation evaluation = new PlanEvaluation();
+        evaluation.setPlanId("A");
+        evaluation.setFeasible(true);
+        when(planComparisonService.comparePlans(any())).thenReturn(
+                new PlanComparisonResult("CS_MS", List.of(evaluation),
+                        Map.of("CONFLICTS", "A")));
+
+        mockMvc.perform(post("/plans/compare")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(COMPARE_PAYLOAD))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.evaluations[0].planId").value("A"))
+                .andExpect(jsonPath("$.evaluations[0].feasible")
+                        .value(true))
+                .andExpect(jsonPath("$.bestPlanByCriterion.CONFLICTS")
+                        .value("A"));
+    }
+
+    /**
+     * Tests malformed comparison requests are rejected with 400.
+     *
+     * @throws Exception if request fails
+     */
+    @Test
+    public void testComparePostBadRequest() throws Exception {
+        final List<String> payloads = List.of(
+                COMPARE_PAYLOAD.replace("\"CS_MS\"", "null"),
+                COMPARE_PAYLOAD.replace("\"CS_MS\"", "\" \""),
+                "{\"programId\": \"CS_MS\", \"plans\": [{}]}",
+                COMPARE_PAYLOAD.replace("\"CONFLICTS\"", "\"COST\""),
+                COMPARE_PAYLOAD.replace("\"CONFLICTS\"", "null"));
+        for (final String payload : payloads) {
+            mockMvc.perform(post("/plans/compare")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(payload))
+                    .andExpect(status().isBadRequest());
+        }
+        verifyNoInteractions(planComparisonService);
+    }
+
+    /**
+     * Tests an unknown degree program yields 404.
+     *
+     * @throws Exception if request fails
+     */
+    @Test
+    public void testComparePostUnknownProgram() throws Exception {
+        when(planComparisonService.comparePlans(any())).thenThrow(
+                new IllegalArgumentException("Degree program not found"));
+
+        mockMvc.perform(post("/plans/compare")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(COMPARE_PAYLOAD))
+                .andExpect(status().isNotFound());
     }
 }

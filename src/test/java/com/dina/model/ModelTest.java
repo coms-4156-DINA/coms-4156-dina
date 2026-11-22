@@ -239,4 +239,47 @@ public final class ModelTest {
         assertTrue(res.isDegreeCompleted());
         assertTrue(res.getCompletedRequirements().isEmpty());
     }
+
+    // -------------------------------------------------------------------------
+    // [AI-Assisted: Claude Opus 5.5] Plan comparison model null handling
+    // -------------------------------------------------------------------------
+
+    /**
+     * Tests plan comparison models turn null collections into empty ones.
+     */
+    @Test
+    public void testPlanComparisonModelsHandleNulls() {
+        final PlanSemester semester = new PlanSemester();
+        semester.setCourseIds(null);
+        assertTrue(semester.getCourseIds().isEmpty());
+
+        final CandidatePlan plan = new CandidatePlan("P1", null);
+        assertTrue(plan.getSemesters().isEmpty());
+
+        final PlanComparisonRequest request = new PlanComparisonRequest();
+        request.setCompletedCourses(null);
+        request.setPlans(null);
+        request.setCriteria(null);
+        assertTrue(request.getCompletedCourses().isEmpty());
+        assertTrue(request.getPlans().isEmpty());
+        assertTrue(request.getCriteria().isEmpty());
+
+        final PlanEvaluation evaluation = new PlanEvaluation();
+        evaluation.setCreditsPerSemester(null);
+        evaluation.setIssues(null);
+        evaluation.setRequirementsFulfilled(null);
+        evaluation.setOutstandingRequirements(null);
+        assertTrue(evaluation.getCreditsPerSemester().isEmpty());
+        assertTrue(evaluation.getIssues().isEmpty());
+        assertTrue(evaluation.getRequirementsFulfilled().isEmpty());
+        assertTrue(evaluation.getOutstandingRequirements().isEmpty());
+
+        final PlanComparisonResult result = new PlanComparisonResult();
+        result.setProgramId("CS_MS");
+        result.setEvaluations(null);
+        result.setBestPlanByCriterion(null);
+        assertEquals("CS_MS", result.getProgramId());
+        assertTrue(result.getEvaluations().isEmpty());
+        assertTrue(result.getBestPlanByCriterion().isEmpty());
+    }
 }
